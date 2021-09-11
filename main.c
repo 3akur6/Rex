@@ -27,6 +27,8 @@
 #include "libs/nuklear_glfw_gl3.h"
 #include "libs/stb_image.h"
 
+static GLFWwindow *rex_glfw_window;
+
 #include "libs/utilities.c"
 
 #include "ui.h"
@@ -44,7 +46,6 @@ int main(void)
 {
     /* Platform */
     struct nk_glfw glfw = {0};
-    static GLFWwindow *win;
     int width = 0, height = 0;
     struct nk_context *ctx;
     struct nk_colorf bg;
@@ -62,9 +63,9 @@ int main(void)
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    win = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Demo", NULL, NULL);
-    glfwMakeContextCurrent(win);
-    glfwGetWindowSize(win, &width, &height);
+    rex_glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Demo", NULL, NULL);
+    glfwMakeContextCurrent(rex_glfw_window);
+    glfwGetWindowSize(rex_glfw_window, &width, &height);
 
     /* OpenGL */
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -75,7 +76,7 @@ int main(void)
         exit(1);
     }
 
-    ctx = nk_glfw3_init(&glfw, win, NK_GLFW3_INSTALL_CALLBACKS);
+    ctx = nk_glfw3_init(&glfw, rex_glfw_window, NK_GLFW3_INSTALL_CALLBACKS);
     /* Load Fonts: if none of these are loaded a default font will be used  */
     /* Load Cursor: if you uncomment cursor loading please hide the cursor */
     {
@@ -93,18 +94,18 @@ int main(void)
 
     bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
     ui_init(); /* initialize, must be set here */
-    while (!glfwWindowShouldClose(win))
+    while (!glfwWindowShouldClose(rex_glfw_window))
     {
         /* Input */
         glfwPollEvents();
         nk_glfw3_new_frame(&glfw);
 
-        glfwGetWindowSize(win, &width, &height);
+        glfwGetWindowSize(rex_glfw_window, &width, &height);
         /* GUI */
         ui_run(ctx, (float)width, (float)height);
 
         /* Draw */
-        glfwGetWindowSize(win, &width, &height);
+        glfwGetWindowSize(rex_glfw_window, &width, &height);
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(bg.r, bg.g, bg.b, bg.a);
@@ -114,7 +115,7 @@ int main(void)
          * Make sure to either a.) save and restore or b.) reset your own state after
          * rendering the UI. */
         nk_glfw3_render(&glfw, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
-        glfwSwapBuffers(win);
+        glfwSwapBuffers(rex_glfw_window);
     }
     nk_glfw3_shutdown(&glfw);
     glfwTerminate();

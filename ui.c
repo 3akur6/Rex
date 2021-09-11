@@ -32,6 +32,8 @@ void ui_run(struct nk_context *ctx, float width, float height)
         {
         case REX_BEGIN_SCENE_NOTHING_HAPPEN:
             goto REX_GOTO_NOTHING_HAPPEN;
+        case REX_BEGIN_SCENE_SPACE_PRESSED:
+            goto REX_GOTO_END_SCENE;
         }
         return;
     case REX_MAIN_SCENE:
