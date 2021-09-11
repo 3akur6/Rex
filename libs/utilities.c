@@ -13,6 +13,8 @@ static struct rex_image rex_image_load(const char *filename)
     int x, y, n;
     GLuint tex;
     unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
+    if (data == NULL)
+        fprintf(stderr, "%s\n", stbi_failure_reason());
 
     glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);
@@ -20,7 +22,7 @@ static struct rex_image rex_image_load(const char *filename)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA4, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
 
@@ -36,21 +38,22 @@ w: subimage width
 h: subimage height
 r: rectangle cutting subimage off from whole image
 */
-static struct rex_image rex_subimage_load(const char *filename, float x, float y, nk_ushort w, nk_ushort h)
+static struct rex_image rex_subimage_load(const char *filename, float x, float y, float sub_width, float sub_height)
 {
     struct rex_image whole = rex_image_load(filename);
+    printf("%d, %d\n", whole.width, whole.height);
 
-    struct nk_rect rect = nk_rect(x, y, 100, 100);
+    struct nk_rect rect = nk_rect(x, y, sub_width, sub_height); /* rect to cut off the image */
 
     struct rex_image part;
-    part.handle = nk_subimage_handle(whole.handle.handle, w, h, rect);
-    part.width = w;
-    part.height = h;
+    part.handle = nk_subimage_id(whole.handle.handle.id, whole.width, whole.height, rect);
+    part.width = sub_width;
+    part.height = sub_height;
 
     return part;
 }
 
-void rex_draw_image(struct nk_context *ctx, const char *filename, float x, float y)
+void rex_draw_image(struct nk_context *ctx, const char *filename, float place_x, float place_y)
 {
     struct nk_command_buffer *canvas;
     struct nk_rect rect;
@@ -62,18 +65,18 @@ void rex_draw_image(struct nk_context *ctx, const char *filename, float x, float
     int image_width = image.width;
     int image_height = image.height;
 
-    rect = nk_rect(x, y, image_width, image_height); /* create rect to draw image */
+    rect = nk_rect(place_x, place_y, image_width, image_height); /* create rect to draw image */
     nk_draw_image(canvas, rect, &image.handle, nk_white);
 }
 
-void rex_draw_subimage(struct nk_context *ctx, const char *filename, float subimage_x, float subimage_y, nk_ushort w, nk_ushort h, float place_x, float place_y)
+void rex_draw_subimage(struct nk_context *ctx, const char *filename, float cut_x, float cut_y, float sub_width, float sub_height, float place_x, float place_y)
 {
     struct nk_command_buffer *canvas;
     struct nk_rect rect;
 
     canvas = nk_window_get_canvas(ctx);
 
-    struct rex_image image = rex_subimage_load(filename, subimage_x, subimage_y, w, h);
+    struct rex_image image = rex_subimage_load(filename, cut_x, cut_y, sub_width, sub_height);
 
     int image_width = image.width;
     int image_height = image.height;

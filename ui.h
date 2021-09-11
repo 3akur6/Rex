@@ -7,7 +7,7 @@
 
 /*============================== objects image ==============================*/
 /* objects image path */
-#define OBJECTS_IMAGE_PATH "assets/200-offline-sprite.png"
+#define OBJECTS_IMAGE_PATH "assets/200-offline-sprite1.png"
 
 /* cactus large */
 #define CACTUS_LARGE_X 652
@@ -33,17 +33,33 @@
 #define PTERODACTYL_X 260
 #define PTERODACTYL_Y 2
 
+/* game over text */
+/* x: 1294, y: 29 */
+#define IMAGE_GAME_OVER_TEXT_PATH "assets/game_over_text.png"
+#define IMAGE_GAME_OVER_TEXT_WIDTH 381
+#define IMAGE_GAME_OVER_TEXT_HEIGHT 21
+
 /* restart */
-#define RESTART_X 2
-#define RESTART_Y 2
+/* x: 2, y: 2 */
+#define IMAGE_RESTART_PATH "assets/restart.png"
+#define IMAGE_RESTART_WIDTH 36
+#define IMAGE_RESTART_HEIGHT 32
 
 /* text sprite */
 #define TEXT_SPRITE_X 1294
 #define TEXT_SPRITE_Y 2
 
-/* trex */
-#define TREX_X 1678
-#define TREX_Y 2
+/* trex 6 */
+/* x: 1678 + 44 * 4 * 2, y: 2 */
+#define IMAGE_TREX_6_PATH "assets/trex_6.png"
+#define IMAGE_TREX_6_WIDTH 88
+#define IMAGE_TREX_6_HEIGHT 94
+
+/* trex 7 */
+/* x: 1678 + 44 * 5 * 2 + 4, y: 2 + 4 */
+#define IMAGE_TREX_7_PATH "assets/trex_7.png"
+#define IMAGE_TREX_7_WIDTH 80
+#define IMAGE_TREX_7_HEIGHT 86
 
 /* star */
 #define STAR_X 1276
