@@ -31,6 +31,7 @@ static GLFWwindow *rex_glfw_window;
 
 #include "libs/utilities.c"
 
+#include "style.c"
 #include "ui.h"
 #include "ui.c"
 

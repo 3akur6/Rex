@@ -116,3 +116,12 @@ enum rex_key_status rex_get_space_status(void)
     else /* if (rex_space_press_since_release_times > KEY_HOLD_THRESHOLD) */
         return REX_KEY_HOLD;
 }
+
+/* calculate the ratio of the blank to center the widget */
+void nk_layout_calc_center_array(float window_total, float item_total, float layout_array[3])
+{
+    float half = (window_total - item_total) / (2 * window_total);
+    layout_array[0] = half;
+    layout_array[1] = item_total / window_total;
+    layout_array[2] = half;
+}

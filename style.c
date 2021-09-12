@@ -1,10 +1,27 @@
-enum theme {THEME_BLACK, THEME_WHITE, THEME_RED, THEME_BLUE, THEME_DARK};
+/* global fonts */
+struct rex_font
+{
+    struct nk_font *font;
+    int height;
+};
+
+struct rex_font rex_fonts[7];
+
+enum theme
+{
+    THEME_BLACK,
+    THEME_WHITE,
+    THEME_RED,
+    THEME_BLUE,
+    THEME_DARK
+};
 
 static void
 set_style(struct nk_context *ctx, enum theme theme)
 {
     struct nk_color table[NK_COLOR_COUNT];
-    if (theme == THEME_WHITE) {
+    if (theme == THEME_WHITE)
+    {
         table[NK_COLOR_TEXT] = nk_rgba(70, 70, 70, 255);
         table[NK_COLOR_WINDOW] = nk_rgba(175, 175, 175, 255);
         table[NK_COLOR_HEADER] = nk_rgba(175, 175, 175, 255);
@@ -27,14 +44,16 @@ set_style(struct nk_context *ctx, enum theme theme)
         table[NK_COLOR_COMBO] = nk_rgba(175, 175, 175, 255);
         table[NK_COLOR_CHART] = nk_rgba(160, 160, 160, 255);
         table[NK_COLOR_CHART_COLOR] = nk_rgba(45, 45, 45, 255);
-        table[NK_COLOR_CHART_COLOR_HIGHLIGHT] = nk_rgba( 255, 0, 0, 255);
+        table[NK_COLOR_CHART_COLOR_HIGHLIGHT] = nk_rgba(255, 0, 0, 255);
         table[NK_COLOR_SCROLLBAR] = nk_rgba(180, 180, 180, 255);
         table[NK_COLOR_SCROLLBAR_CURSOR] = nk_rgba(140, 140, 140, 255);
         table[NK_COLOR_SCROLLBAR_CURSOR_HOVER] = nk_rgba(150, 150, 150, 255);
         table[NK_COLOR_SCROLLBAR_CURSOR_ACTIVE] = nk_rgba(160, 160, 160, 255);
         table[NK_COLOR_TAB_HEADER] = nk_rgba(180, 180, 180, 255);
         nk_style_from_table(ctx, table);
-    } else if (theme == THEME_RED) {
+    }
+    else if (theme == THEME_RED)
+    {
         table[NK_COLOR_TEXT] = nk_rgba(190, 190, 190, 255);
         table[NK_COLOR_WINDOW] = nk_rgba(30, 33, 40, 215);
         table[NK_COLOR_HEADER] = nk_rgba(181, 45, 69, 220);
@@ -57,14 +76,16 @@ set_style(struct nk_context *ctx, enum theme theme)
         table[NK_COLOR_COMBO] = nk_rgba(51, 55, 67, 255);
         table[NK_COLOR_CHART] = nk_rgba(51, 55, 67, 255);
         table[NK_COLOR_CHART_COLOR] = nk_rgba(170, 40, 60, 255);
-        table[NK_COLOR_CHART_COLOR_HIGHLIGHT] = nk_rgba( 255, 0, 0, 255);
+        table[NK_COLOR_CHART_COLOR_HIGHLIGHT] = nk_rgba(255, 0, 0, 255);
         table[NK_COLOR_SCROLLBAR] = nk_rgba(30, 33, 40, 255);
         table[NK_COLOR_SCROLLBAR_CURSOR] = nk_rgba(64, 84, 95, 255);
         table[NK_COLOR_SCROLLBAR_CURSOR_HOVER] = nk_rgba(70, 90, 100, 255);
         table[NK_COLOR_SCROLLBAR_CURSOR_ACTIVE] = nk_rgba(75, 95, 105, 255);
         table[NK_COLOR_TAB_HEADER] = nk_rgba(181, 45, 69, 220);
         nk_style_from_table(ctx, table);
-    } else if (theme == THEME_BLUE) {
+    }
+    else if (theme == THEME_BLUE)
+    {
         table[NK_COLOR_TEXT] = nk_rgba(20, 20, 20, 255);
         table[NK_COLOR_WINDOW] = nk_rgba(202, 212, 214, 215);
         table[NK_COLOR_HEADER] = nk_rgba(137, 182, 224, 220);
@@ -87,14 +108,16 @@ set_style(struct nk_context *ctx, enum theme theme)
         table[NK_COLOR_COMBO] = nk_rgba(210, 210, 210, 255);
         table[NK_COLOR_CHART] = nk_rgba(210, 210, 210, 255);
         table[NK_COLOR_CHART_COLOR] = nk_rgba(137, 182, 224, 255);
-        table[NK_COLOR_CHART_COLOR_HIGHLIGHT] = nk_rgba( 255, 0, 0, 255);
+        table[NK_COLOR_CHART_COLOR_HIGHLIGHT] = nk_rgba(255, 0, 0, 255);
         table[NK_COLOR_SCROLLBAR] = nk_rgba(190, 200, 200, 255);
         table[NK_COLOR_SCROLLBAR_CURSOR] = nk_rgba(64, 84, 95, 255);
         table[NK_COLOR_SCROLLBAR_CURSOR_HOVER] = nk_rgba(70, 90, 100, 255);
         table[NK_COLOR_SCROLLBAR_CURSOR_ACTIVE] = nk_rgba(75, 95, 105, 255);
         table[NK_COLOR_TAB_HEADER] = nk_rgba(156, 193, 220, 255);
         nk_style_from_table(ctx, table);
-    } else if (theme == THEME_DARK) {
+    }
+    else if (theme == THEME_DARK)
+    {
         table[NK_COLOR_TEXT] = nk_rgba(210, 210, 210, 255);
         table[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 215);
         table[NK_COLOR_HEADER] = nk_rgba(51, 51, 56, 220);
@@ -124,9 +147,9 @@ set_style(struct nk_context *ctx, enum theme theme)
         table[NK_COLOR_SCROLLBAR_CURSOR_ACTIVE] = nk_rgba(58, 93, 121, 255);
         table[NK_COLOR_TAB_HEADER] = nk_rgba(48, 83, 111, 255);
         nk_style_from_table(ctx, table);
-    } else {
+    }
+    else
+    {
         nk_style_default(ctx);
     }
 }
-
-
