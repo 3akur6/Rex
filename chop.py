@@ -26,18 +26,11 @@ whole_height = whole_size[1]
 #     height = item['height'] * 2
 #     region = whole.crop((x, y, x + width, y + height))
 #     region.save(name)
-# name = "trex_7.png"
-# x = 1678 + 44 * 5 * 2 + 4
-# y = 2 + 4
-# width = 44 * 2 - 8
-# height = 47 * 2 - 8
-# region = whole.crop((x, y, x + width, y + height))
-# region.save(name)
-
-name = "text_sprite.png"
-x = 1293
-y = 4
-width = 150
-height = 47 * 2 - 8
+name = "horizon.png"
+x = 2
+y = 104
+width = 2400
+height = 12 * 2
 region = whole.crop((x, y, x + width, y + height))
 region.save(name)
+

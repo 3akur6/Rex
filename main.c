@@ -26,12 +26,9 @@
 #include "libs/nuklear.h"
 #include "libs/nuklear_glfw_gl3.h"
 #include "libs/stb_image.h"
-
-static GLFWwindow *rex_glfw_window;
+#include "ui.h"
 
 #include "libs/utilities.c"
-
-#include "ui.h"
 #include "ui.c"
 
 #define MAX_VERTEX_BUFFER 512 * 1024
@@ -45,6 +42,7 @@ static void error_callback(int e, const char *d)
 int main(void)
 {
     /* Platform */
+    static GLFWwindow *rex_glfw_window;
     int width = 0, height = 0;
     struct nk_context *ctx;
     struct nk_colorf bg;
