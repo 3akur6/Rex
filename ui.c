@@ -15,8 +15,22 @@ enum ui_scene
 static enum ui_scene current_scene;
 
 /* prepare some static variables */
-void ui_init(void)
+void ui_init(struct nk_context *ctx)
 {
+    /* load font */
+    {
+        struct nk_font_atlas *atlas;
+        nk_glfw3_font_stash_begin(&atlas);
+
+        { /* add new fonts here */
+            rex_fonts[0].font = nk_font_atlas_add_from_file(atlas, "fonts/DroidSans.ttf", 32, 0);
+            rex_fonts[0].height = 32;
+        }
+
+        nk_glfw3_font_stash_end();
+        nk_style_set_font(ctx, &rex_fonts[0].font->handle);
+    }
+
     return;
 }
 

@@ -7,9 +7,16 @@ enum rex_begin_scene_event
 /* draw prompt text */
 void rex_begin_scene_prompt_text(struct nk_context *ctx, float x, float y)
 {
+    /* set the style of the start button*/
+    set_style(ctx, THEME_BLACK);
+
     if (nk_begin(ctx, "Prompt Text", nk_rect(x, y, 300, 100), NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR))
     {
         nk_layout_row_dynamic(ctx, 30, 1);
+
+        /* set font */
+        nk_style_set_font(ctx, &rex_fonts[0].font->handle);
+
         nk_label(ctx, "press space to start", NK_TEXT_CENTERED);
     }
     nk_end(ctx);
@@ -48,6 +55,7 @@ enum rex_begin_scene_event rex_begin_scene(struct nk_context *ctx, float window_
     enum rex_begin_scene_event event = REX_BEGIN_SCENE_NOTHING_HAPPEN;
 
     /* change style here if necessary */
+    set_style(ctx, THEME_WHITE);
 
     /* draw scene here */
     /* draw background */
