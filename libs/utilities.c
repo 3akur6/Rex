@@ -208,7 +208,7 @@ void rex_ymove_image_from_to_gradually(struct nk_context *ctx, unsigned char ima
 
 nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, float y)
 {
-    int need_frames_amount = REX_GAME_JUMP_HEIGHT / REX_GAME_JUMP_STEP;
+    int need_frames_amount = (2 * REX_GAME_JUMP_HEIGHT) / REX_GAME_JUMP_STEP;
     if (rex_frame > need_frames_amount)
     {
         rex_draw_image(ctx, image_id, x, y);
@@ -218,29 +218,33 @@ nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, f
     if (rex_frame < (need_frames_amount / 2))
         rex_draw_image(ctx, image_id, x, y - rex_frame * REX_GAME_JUMP_STEP);
     else
-        rex_draw_image(ctx, image_id, x, y - REX_GAME_JUMP_HEIGHT + rex_frame * REX_GAME_JUMP_STEP);
+        rex_draw_image(ctx, image_id, x, y - REX_GAME_JUMP_HEIGHT + (rex_frame - need_frames_amount / 2) * REX_GAME_JUMP_STEP);
 
     return nk_false;
 }
 
 void rex_trex_walk(struct nk_context *ctx, float x, float y)
 {
-    if (rex_frame % 2 == 1)
+    if (rex_frame & REX_GAME_TREX_WALK_SPEED)
         rex_draw_image(ctx, IMAGE_TREX_4_ID, x, y);
     else
         rex_draw_image(ctx, IMAGE_TREX_5_ID, x, y);
+
+    return;
 }
 
 void rex_horizon_line_roll(struct nk_context *ctx, float x, float y)
 {
     /* horizon line offset in x */
-    rex_horizon_line_offset = (rex_horizon_line_offset + rex_frame * rex_game_speed * 2) % IMAGE_HORIZON_WIDTH;
+    rex_horizon_line_offset = (rex_horizon_line_offset + rex_game_speed * REX_GAME_HORIZON_LINE_ROLL_SPEED) % IMAGE_HORIZON_WIDTH;
 
     float window_width = glfw.width;
     float split = IMAGE_HORIZON_WIDTH - window_width;
 
-    if (rex_horizon_line_offset < split)
-        rex_draw_subimage(ctx, IMAGE_HORIZON_ID, rex_horizon_line_offset, 0, glfw.width, IMAGE_HORIZON_HEIGHT, x, y);
+    if (rex_horizon_line_offset <= split)
+    {
+        rex_draw_subimage(ctx, IMAGE_HORIZON_ID, rex_horizon_line_offset, 0, window_width, IMAGE_HORIZON_HEIGHT, x, y);
+    }
     else
     {
         float part1_width = IMAGE_HORIZON_WIDTH - rex_horizon_line_offset;
@@ -248,4 +252,40 @@ void rex_horizon_line_roll(struct nk_context *ctx, float x, float y)
         rex_draw_subimage(ctx, IMAGE_HORIZON_ID, rex_horizon_line_offset, 0, part1_width, IMAGE_HORIZON_HEIGHT, x, y);
         rex_draw_subimage(ctx, IMAGE_HORIZON_ID, 0, 0, part2_width, IMAGE_HORIZON_HEIGHT, x + part1_width, y);
     }
+}
+
+void rex_pterodactyl_fly(struct nk_context *ctx, float x, float y)
+{
+    if (rex_frame & REX_GAME_PTERODACTYL_REFRESH_SPEED)
+        rex_draw_image(ctx, IMAGE_PTERODACTYL_0_ID, x, y);
+    else
+        rex_draw_image(ctx, IMAGE_PTERODACTYL_1_ID, x, y);
+
+    return;
+}
+
+enum rex_game_obstackle_type
+{
+    REX_GAME_OBSTACKLE_PTERODACTYL,
+    REX_GAME_OBSTACKLE_CACTUS_SMALL_0,
+    REX_GAME_OBSTACKLE_CACTUS_SMALL_1,
+    REX_GAME_OBSTACKLE_CACTUS_SMALL_2,
+    REX_GAME_OBSTACKLE_CACTUS_LARGE_0,
+    REX_GAME_OBSTACKLE_CACTUS_LARGE_1,
+    REX_GAME_OBSTACKLE_CACTUS_LARGE_2
+};
+
+struct rex_game_obstackle
+{
+    enum rex_game_obstackle_type type;
+    float x;
+    float y;
+};
+
+enum rex_game_obstackle_type rex_game_random_obstackle(void)
+{
+    srand((unsigned)time(NULL));
+    int random = rand() % REX_GAME_OBSTACKLE_TYPE_AMOUNT;
+
+    return random;
 }

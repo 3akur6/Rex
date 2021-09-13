@@ -1,7 +1,6 @@
 from PIL import Image
 
-# whole = Image.open('assets/200-offline-sprite.png')
-whole = Image.open('assets/200-error-offline.png')
+whole = Image.open('assets/200-offline-sprite.png')
 
 whole_size = whole.size
 whole_width = whole_size[0]
@@ -27,11 +26,11 @@ whole_height = whole_size[1]
 #     height = item['height'] * 2
 #     region = whole.crop((x, y, x + width, y + height))
 #     region.save(name)
-name = "trex_0.png"
-x = 0
-y = 58
-width = 128
-height = 86
+name = "cactus_large_1.png"
+x = 702
+y = 2
+width = 100
+height = 100
 region = whole.crop((x, y, x + width, y + height))
 region.save(name)
 
