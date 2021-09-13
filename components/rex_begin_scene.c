@@ -29,7 +29,7 @@ void rex_begin_scene_rex_static(struct nk_context *ctx, float x, float y)
 
     canvas = nk_window_get_canvas(ctx);
 
-    struct rex_image image = rex_image_load(BEGIN_SCENE_REX_STATIC_IMAGE_PATH);
+    struct rex_image image = rex_image_load(IMAGE_TREX_0_ID);
 
     int image_width = image.width;
     int image_height = image.height;
@@ -40,37 +40,36 @@ void rex_begin_scene_rex_static(struct nk_context *ctx, float x, float y)
 
 void rex_begin_scene_not_jump(struct nk_context *ctx)
 {
-    rex_draw_image(ctx, IMAGE_TREX_2_PATH, 0, 400 - END_SCENE_FALL_BETWEEN_TREX_HORIZON);
-    rex_draw_subimage(ctx, IMAGE_HORIZON_PATH, 0, 0, BEGIN_SCENE_FIRST_JUMP_HOIZON_WIDTH, IMAGE_HORIZON_HEIGHT, 0, 400);
+    rex_draw_image(ctx, IMAGE_TREX_2_ID, 0, 400 - END_SCENE_FALL_BETWEEN_TREX_HORIZON);
+    rex_draw_subimage(ctx, IMAGE_HORIZON_ID, 0, 0, BEGIN_SCENE_FIRST_JUMP_HOIZON_WIDTH, IMAGE_HORIZON_HEIGHT, 0, 400);
 }
 
 void rex_begin_scene_first_jump(struct nk_context *ctx)
 {
-    rex_trex_jump(ctx, IMAGE_TREX_2_PATH, 0, 400 - END_SCENE_FALL_BETWEEN_TREX_HORIZON);
-    rex_draw_subimage(ctx, IMAGE_HORIZON_PATH, 0, 0, BEGIN_SCENE_FIRST_JUMP_HOIZON_WIDTH, IMAGE_HORIZON_HEIGHT, 0, 400);
+    rex_trex_jump(ctx, IMAGE_TREX_2_ID, 0, 400 - END_SCENE_FALL_BETWEEN_TREX_HORIZON);
+    rex_draw_subimage(ctx, IMAGE_HORIZON_ID, 0, 0, BEGIN_SCENE_FIRST_JUMP_HOIZON_WIDTH, IMAGE_HORIZON_HEIGHT, 0, 400);
 }
 
 enum rex_begin_scene_event rex_begin_scene(struct nk_context *ctx, float window_width, float window_height)
 {
     enum rex_begin_scene_event event = REX_BEGIN_SCENE_NOTHING_HAPPEN;
-
     /* change style here if necessary */
     set_style(ctx, THEME_WHITE);
 
     /* draw scene here */
+    rex_begin_scene_prompt_text(ctx, 120, 120);
     /* draw background */
     nk_begin(ctx, BEGIN_SCENE_NAME, nk_rect(0, 0, window_width, window_height), NK_WINDOW_BACKGROUND);
 
+    int space_status = rex_get_space_status();
     if (rex_event_lock == nk_false)
     {
         /* detect event */
         /* detect space event */
-        switch (rex_get_space_status())
+        switch (space_status)
         {
         case REX_KEY_HOLD:
         case REX_KEY_PRESS:
-            /* send space pressed message to UI */
-            event = REX_BEGIN_SCENE_SPACE_PRESSED;
             /* event lock */
             rex_event_lock = nk_true;
 
@@ -84,13 +83,23 @@ enum rex_begin_scene_event rex_begin_scene(struct nk_context *ctx, float window_
     /* must be place in the background window */
     /* first jump */
     if (rex_event_lock == nk_true)
-        rex_begin_scene_first_jump(ctx);
+    {
+        rex_begin_frames();
+        if (rex_trex_jump(ctx, IMAGE_TREX_2_ID, 0, 400 - END_SCENE_FALL_BETWEEN_TREX_HORIZON) == nk_true)
+        { /* trex finishes jumping */
+            rex_event_lock = nk_false;
+            event = REX_BEGIN_SCENE_SPACE_PRESSED;
+            rex_end_frames();
+
+            goto NK_BEGIN_SCENE_GOTO_NK_END;
+        }
+        rex_draw_subimage(ctx, IMAGE_HORIZON_ID, 0, 0, BEGIN_SCENE_FIRST_JUMP_HOIZON_WIDTH, IMAGE_HORIZON_HEIGHT, 0, 400);
+    }
     else
         rex_begin_scene_not_jump(ctx);
 
+NK_BEGIN_SCENE_GOTO_NK_END:
     nk_end(ctx);
-
-    rex_begin_scene_prompt_text(ctx, 120, 120);
 
     return event;
 }

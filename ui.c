@@ -45,8 +45,7 @@ void ui_run(struct nk_context *ctx, float width, float height)
         {
         case REX_BEGIN_SCENE_SPACE_PRESSED:
             /* ensure all locks free */
-            if (rex_lock_is_free() == nk_true)
-                goto REX_GOTO_END_SCENE;
+            goto REX_GOTO_END_SCENE;
         default:
             goto REX_GOTO_NOTHING_HAPPEN;
         }
@@ -61,8 +60,7 @@ void ui_run(struct nk_context *ctx, float width, float height)
         {
         case REX_END_SCENE_SPACE_PRESSED:
             /* ensure all locks free */
-            if (rex_lock_is_free())
-                goto REX_GOTO_MAIN_SCENE;
+            goto REX_GOTO_MAIN_SCENE;
         default:
             goto REX_GOTO_NOTHING_HAPPEN;
         }

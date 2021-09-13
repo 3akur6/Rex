@@ -14,6 +14,10 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
     nk_begin(ctx, MAIN_SCENE_NAME, nk_rect(0, 0, window_width, window_height), NK_WINDOW_BACKGROUND);
 
     {
+        rex_begin_frames();
+
+        rex_trex_walk(ctx, 4, 100);
+        rex_horizon_line_roll(ctx, 4, 100);
     }
 
     nk_end(ctx);
