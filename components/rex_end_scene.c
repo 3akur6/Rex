@@ -21,7 +21,7 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
     enum rex_end_scene_event event = REX_END_SCENE_NOTHING_HAPPEN;
 
     /* change style of the third scene*/
-    set_style(ctx, THEME_WHITE);
+    set_style(ctx, THEME_PROMPT_TEXT);
 
     /* draw scene here */
     nk_begin(ctx, END_SCENE_NAME, nk_rect(0, 0, window_width, window_height), NK_WINDOW_BACKGROUND);

@@ -8,7 +8,7 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
     enum rex_main_scene_event event = REX_MAIN_SCENE_NOTHING_HAPPEN;
 
     /* change style of the second scene*/
-    set_style(ctx, THEME_WHITE);
+    set_style(ctx, THEME_PROMPT_TEXT);
 
     /* draw scene here */
     nk_begin(ctx, MAIN_SCENE_NAME, nk_rect(0, 0, window_width, window_height), NK_WINDOW_BACKGROUND);

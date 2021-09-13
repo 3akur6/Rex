@@ -105,6 +105,11 @@
 /* begin scene */
 #define BEGIN_SCENE_REX_STATIC_IMAGE_PATH "assets/200-error-offline.png"
 #define BEGIN_SCENE_FIRST_JUMP_HOIZON_WIDTH IMAGE_TREX_2_WIDTH
+#define BEGIN_SCENE_PROMT_TEXT_WIDTH 250
+#define BEGIN_SCENE_PROMT_TEXT_HEIGHT 32 /* match the height of fonts[0] */
+#define BEGIN_SCENE_PROMT_TEXT_X 835
+#define BEGIN_SCENE_PROMT_TEXT_Y 524
+#define BEGIN_SCENE_PROMT_TEXT_ROW_HEIGHT 30
 
 /* main scene */
 
