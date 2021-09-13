@@ -289,3 +289,7 @@ enum rex_game_obstackle_type rex_game_random_obstackle(void)
 
     return random;
 }
+
+/* can be abstracted as a struct */
+static unsigned char rex_obstackle_amount = 0;
+static struct rex_game_obstackle rex_obstackles[REX_GAME_MAX_OBSTACKLE_AMOUNT];

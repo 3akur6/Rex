@@ -39,19 +39,19 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
     }
 
     /* change style of the third scene */
-    set_style(ctx, THEME_WHITE);
+    // set_style(ctx, THEME_WHITE);
 
     /* draw scene here */
     nk_begin(ctx, END_SCENE_NAME, nk_rect(0, 0, window_width, window_height), NK_WINDOW_BACKGROUND);
     {
         /* draw images */
-        rex_draw_image(ctx, IMAGE_GAME_OVER_TEXT_ID, 50, 0);
-        rex_draw_image(ctx, IMAGE_RESTART_ID, 100, 100);
-        rex_draw_image(ctx, IMAGE_TREX_7_ID, 200, 200);
+        rex_draw_image(ctx, IMAGE_GAME_OVER_TEXT_ID, END_SCENE_GAME_OVER_X, END_SCENE_GAME_OVER_Y);
+        rex_draw_image(ctx, IMAGE_RESTART_ID, END_SCENE_RESTART_X, END_SCENE_RESTART_Y);
+        rex_draw_image(ctx, IMAGE_TREX_7_ID, END_SCENE_TREX_X, END_SCENE_HORIZON_Y - END_SCENE_FALL_BETWEEN_TREX_HORIZON);
         /* draw hi score */
-        rex_end_scene_hi_score(ctx, 300, 100);
+        rex_end_scene_hi_score(ctx, END_SCENE_HI_SCORE_X, END_SCENE_HI_SCORE_Y);
         /* draw current score */
-        rex_draw_number(ctx, rex_current_score, 550, 100);
+        rex_draw_number(ctx, rex_current_score, END_SCENE_CURRENT_SCORE_X, END_SCENE_CURRENT_SCORE_Y);
     }
     nk_end(ctx);
 
