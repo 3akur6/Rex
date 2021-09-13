@@ -23,7 +23,8 @@ void ui_init(struct nk_context *ctx)
         nk_glfw3_font_stash_begin(&atlas);
 
         { /* add new fonts here */
-            rex_fonts[0].font = nk_font_atlas_add_from_file(atlas, "fonts/DroidSans.ttf", 32, 0);
+            //rex_fonts[0].font = nk_font_atlas_add_from_file(atlas, "fonts/DroidSans.ttf", 20, 0);
+            rex_fonts[0].font = nk_font_atlas_add_from_file(atlas, "fonts/Apple.ttf", 20, 0);
             rex_fonts[0].height = 32;
         }
 
@@ -45,8 +46,7 @@ void ui_run(struct nk_context *ctx, float width, float height)
         {
         case REX_BEGIN_SCENE_SPACE_PRESSED:
             /* ensure all locks free */
-            if (rex_lock_is_free() == nk_true)
-                goto REX_GOTO_END_SCENE;
+            goto REX_GOTO_END_SCENE;
         default:
             goto REX_GOTO_NOTHING_HAPPEN;
         }
@@ -61,8 +61,7 @@ void ui_run(struct nk_context *ctx, float width, float height)
         {
         case REX_END_SCENE_SPACE_PRESSED:
             /* ensure all locks free */
-            if (rex_lock_is_free())
-                goto REX_GOTO_MAIN_SCENE;
+            goto REX_GOTO_MAIN_SCENE;
         default:
             goto REX_GOTO_NOTHING_HAPPEN;
         }

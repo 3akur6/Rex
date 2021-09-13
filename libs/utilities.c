@@ -7,12 +7,20 @@ struct rex_image
     struct nk_image handle;
 };
 
-static struct rex_image rex_image_load(const char *filename)
+static nk_bool rex_image_cached_list[MAX_IMAGES_AMOUNT]; /* if rex_image_cached_list[image_id] is nk_true, this image has been cached in rex_images[image_id] */
+struct rex_image rex_images[MAX_IMAGES_AMOUNT];          /* images buffer */
+
+static struct rex_image rex_image_load(unsigned char image_id)
 {
+    /* image has been cached */
+    if (rex_image_cached_list[image_id] == nk_true)
+        return rex_images[image_id];
+
     struct rex_image image;
     int x, y, n;
     GLuint tex;
-    unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
+
+    unsigned char *data = stbi_load(rex_image_path_list[image_id], &x, &y, &n, 0);
     if (data == NULL)
         fprintf(stderr, "%s\n", stbi_failure_reason());
 
@@ -30,7 +38,10 @@ static struct rex_image rex_image_load(const char *filename)
     image.width = x;
     image.height = y;
 
-    return image;
+    rex_images[image_id] = image;
+    rex_image_cached_list[image_id] = nk_true;
+
+    return rex_images[image_id];
 }
 
 /* load part of image from file 
@@ -38,9 +49,9 @@ x, y: from (x, y) to cut off the subimage
 sub_width: subimage width
 sub_height: subimage height
 */
-static struct rex_image rex_subimage_load(const char *filename, float x, float y, float sub_width, float sub_height)
+static struct rex_image rex_subimage_load(unsigned char image_id, float x, float y, float sub_width, float sub_height)
 {
-    struct rex_image whole = rex_image_load(filename);
+    struct rex_image whole = rex_image_load(image_id);
 
     struct nk_rect rect = nk_rect(x, y, sub_width, sub_height); /* rect to cut off the image */
 
@@ -52,14 +63,14 @@ static struct rex_image rex_subimage_load(const char *filename, float x, float y
     return part;
 }
 
-void rex_draw_image(struct nk_context *ctx, const char *filename, float place_x, float place_y)
+void rex_draw_image(struct nk_context *ctx, unsigned char image_id, float place_x, float place_y)
 {
     struct nk_command_buffer *canvas;
     struct nk_rect rect;
 
     canvas = nk_window_get_canvas(ctx);
 
-    struct rex_image image = rex_image_load(filename);
+    struct rex_image image = rex_image_load(image_id);
 
     int image_width = image.width;
     int image_height = image.height;
@@ -68,14 +79,14 @@ void rex_draw_image(struct nk_context *ctx, const char *filename, float place_x,
     nk_draw_image(canvas, rect, &image.handle, nk_white);
 }
 
-void rex_draw_subimage(struct nk_context *ctx, const char *filename, float cut_x, float cut_y, float sub_width, float sub_height, float place_x, float place_y)
+void rex_draw_subimage(struct nk_context *ctx, unsigned char image_id, float cut_x, float cut_y, float sub_width, float sub_height, float place_x, float place_y)
 {
     struct nk_command_buffer *canvas;
     struct nk_rect rect;
 
     canvas = nk_window_get_canvas(ctx);
 
-    struct rex_image image = rex_subimage_load(filename, cut_x, cut_y, sub_width, sub_height);
+    struct rex_image image = rex_subimage_load(image_id, cut_x, cut_y, sub_width, sub_height);
 
     int image_width = image.width;
     int image_height = image.height;
@@ -86,9 +97,10 @@ void rex_draw_subimage(struct nk_context *ctx, const char *filename, float cut_x
 
 enum rex_key_status
 {
-    REX_KEY_PRESS,   /* press then release */
-    REX_KEY_RELEASE, /* not press */
-    REX_KEY_HOLD     /* keep pressing key for some time */
+    REX_KEY_PRESS,      /* press then release */
+    REX_KEY_LONG_PRESS, /* long press */
+    REX_KEY_RELEASE,    /* not press */
+    REX_KEY_HOLD        /* keep pressing key for some time */
 };
 
 static unsigned int rex_space_press_since_release_times = 0; /* reset when space is released */
@@ -107,13 +119,17 @@ enum rex_key_status rex_get_space_status(void)
     if (rex_space_press_since_release_times_saved == 0)
         return REX_KEY_RELEASE;
 
+    /* still press */
+    else if (rex_space_press_since_release_times >= KEY_HOLD_THRESHOLD)
+        return REX_KEY_HOLD;
+
     /* space pressed */
-    else if (rex_space_press_since_release_times <= KEY_HOLD_THRESHOLD)
-        return REX_KEY_PRESS;
+    else if (rex_space_press_since_release_times_saved >= KEY_HOLD_THRESHOLD && rex_space_press_since_release_times == 0)
+        return REX_KEY_LONG_PRESS;
 
     /* space hold */
     else /* if (rex_space_press_since_release_times > KEY_HOLD_THRESHOLD) */
-        return REX_KEY_HOLD;
+        return REX_KEY_PRESS;
 }
 
 void rex_draw_digit(struct nk_context *ctx, unsigned char digit, float place_x, float place_y)
@@ -123,7 +139,7 @@ void rex_draw_digit(struct nk_context *ctx, unsigned char digit, float place_x, 
         return;
 
     unsigned int offset = digit * IMAGE_TEXT_SPRITE_DIGIT_OFFSET;
-    rex_draw_subimage(ctx, IMAGE_TEXT_SPRITE_PATH, (float)offset, 0, IMAGE_TEXT_SPRITE_DIGIT_WIDTH, IMAGE_TEXT_SPRITE_HEIGHT, place_x, place_y);
+    rex_draw_subimage(ctx, IMAGE_TEXT_SPRITE_ID, (float)offset, 0, IMAGE_TEXT_SPRITE_DIGIT_WIDTH, IMAGE_TEXT_SPRITE_HEIGHT, place_x, place_y);
 }
 
 void rex_draw_number(struct nk_context *ctx, unsigned int number, float place_x, float place_y)
@@ -159,29 +175,27 @@ nk_bool rex_refresh_lock_is_free(void)
     return nk_false;
 }
 
-nk_bool rex_lock_is_free(void)
-{
-    return (rex_space_press_since_release_times == 0 && rex_refresh_lock_is_free() && rex_event_lock == nk_false);
-}
-
 /* introduce frames to draw dynamic image 
 update refresh cycle and frame here
 */
-void rex_intro_frames(void)
+void rex_begin_frames(void)
 {
     rex_refresh_cycle++;
     rex_refresh_cycle %= REFRESH_CYCLES; /* refresh cycle between 0 and REFRESH_CYCLES */
 
     /* increase rex_frame when fininshing one refresh cycle */
     if (rex_refresh_cycle == 0)
-        rex_frame++;
+        rex_frame = (rex_frame + 1) % MAX_FRAME_AMOUNT;
 }
 
-void rex_ymove_image_from_to_gradually(struct nk_context *ctx, const char *filename, float x, float from_y, float to_y, float step_y)
+void rex_end_frames(void)
 {
-    /* introduce frames to draw dynamic image */
-    rex_intro_frames();
+    rex_refresh_cycle = 0;
+    rex_frame = 0;
+}
 
+void rex_ymove_image_from_to_gradually(struct nk_context *ctx, unsigned char image_id, float x, float from_y, float to_y, float step_y)
+{
     float offset = from_y - to_y;
     int need_frames_amount = offset / step_y;
 
@@ -189,22 +203,49 @@ void rex_ymove_image_from_to_gradually(struct nk_context *ctx, const char *filen
     if (rex_frame > need_frames_amount)
         rex_frame = 0;
 
-    rex_draw_image(ctx, filename, x, from_y - step_y * rex_frame);
+    rex_draw_image(ctx, image_id, x, from_y - step_y * rex_frame);
 }
 
-void rex_trex_jump(struct nk_context *ctx, const char *filename, float x, float y)
+nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, float y)
 {
-    /* introduce frames to draw dynamic image */
-    rex_intro_frames();
-
-    int need_frames_amount = REX_JUMP_HEIGHT / REX_JUMP_STEP;
-
-    /* increase rex_frame from 0 to REX_JUMP_HEIGHT then reset */
+    int need_frames_amount = REX_GAME_JUMP_HEIGHT / REX_GAME_JUMP_STEP;
     if (rex_frame > need_frames_amount)
-        rex_frame = 0;
+    {
+        rex_draw_image(ctx, image_id, x, y);
+        return nk_true;
+    }
 
     if (rex_frame < (need_frames_amount / 2))
-        rex_draw_image(ctx, filename, x, y - REX_JUMP_STEP * rex_frame);
+        rex_draw_image(ctx, image_id, x, y - rex_frame * REX_GAME_JUMP_STEP);
     else
-        rex_draw_image(ctx, filename, x, y - REX_JUMP_HEIGHT + REX_JUMP_STEP * rex_frame);
+        rex_draw_image(ctx, image_id, x, y - REX_GAME_JUMP_HEIGHT + rex_frame * REX_GAME_JUMP_STEP);
+
+    return nk_false;
+}
+
+void rex_trex_walk(struct nk_context *ctx, float x, float y)
+{
+    if (rex_frame % 2 == 1)
+        rex_draw_image(ctx, IMAGE_TREX_4_ID, x, y);
+    else
+        rex_draw_image(ctx, IMAGE_TREX_5_ID, x, y);
+}
+
+void rex_horizon_line_roll(struct nk_context *ctx, float x, float y)
+{
+    /* horizon line offset in x */
+    rex_horizon_line_offset = (rex_horizon_line_offset + rex_frame * rex_game_speed * 2) % IMAGE_HORIZON_WIDTH;
+
+    float window_width = glfw.width;
+    float split = IMAGE_HORIZON_WIDTH - window_width;
+
+    if (rex_horizon_line_offset < split)
+        rex_draw_subimage(ctx, IMAGE_HORIZON_ID, rex_horizon_line_offset, 0, glfw.width, IMAGE_HORIZON_HEIGHT, x, y);
+    else
+    {
+        float part1_width = IMAGE_HORIZON_WIDTH - rex_horizon_line_offset;
+        float part2_width = window_width - part1_width;
+        rex_draw_subimage(ctx, IMAGE_HORIZON_ID, rex_horizon_line_offset, 0, part1_width, IMAGE_HORIZON_HEIGHT, x, y);
+        rex_draw_subimage(ctx, IMAGE_HORIZON_ID, 0, 0, part2_width, IMAGE_HORIZON_HEIGHT, x + part1_width, y);
+    }
 }

@@ -18,7 +18,7 @@ void set_prompt_text_style(struct nk_context *ctx)
 {
     struct nk_color table[NK_COLOR_COUNT];
     table[NK_COLOR_TEXT] = nk_rgba(70, 70, 70, 255);
-    table[NK_COLOR_WINDOW] = nk_rgba(175, 175, 175, 255);
+    table[NK_COLOR_WINDOW] = nk_rgba(255, 255, 255, 255);
     table[NK_COLOR_HEADER] = nk_rgba(175, 175, 175, 255);
     table[NK_COLOR_BORDER] = nk_rgba(0, 0, 0, 255);
     table[NK_COLOR_BUTTON] = nk_rgba(185, 185, 185, 255);
