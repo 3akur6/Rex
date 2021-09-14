@@ -142,13 +142,13 @@ void rex_draw_digit(struct nk_context *ctx, unsigned char digit, float place_x, 
     rex_draw_subimage(ctx, IMAGE_TEXT_SPRITE_ID, (float)offset, 0, IMAGE_TEXT_SPRITE_DIGIT_WIDTH, IMAGE_TEXT_SPRITE_HEIGHT, place_x, place_y);
 }
 
-void rex_draw_number(struct nk_context *ctx, unsigned int number, float place_x, float place_y)
+void rex_draw_number(struct nk_context *ctx, unsigned int number, unsigned char digits_size, float place_x, float place_y)
 {
-    if (number == 0)
-    {
-        rex_draw_digit(ctx, number, place_x, place_y);
-        return;
-    }
+    // if (number == 0)
+    // {
+    //     rex_draw_digit(ctx, number, place_x, place_y);
+    //     return;
+    // }
     /* store digits from low to high */
     unsigned char digits[MAX_DIGITS_AMOUNT];
     unsigned char digits_amount = 0;
@@ -159,9 +159,14 @@ void rex_draw_number(struct nk_context *ctx, unsigned int number, float place_x,
     }
     /* now draw digit from high to low */
     float offset = 0;
-    for (unsigned char i = 0; i < digits_amount; i++)
+    for (unsigned char i = 0; i < digits_size; i++)
     {
-        rex_draw_digit(ctx, digits[digits_amount - i - 1], place_x + offset, place_y);
+        unsigned char digit;
+        if (i + 1 > digits_size - digits_amount)
+            digit = digits[digits_amount - i - 1];
+        else
+            digit = 0; /* place 0 to blank position */
+        rex_draw_digit(ctx, digit, place_x + offset, place_y);
         offset += DRAW_NUMBER_DIGIT_OFFSET;
     }
 }

@@ -20,6 +20,7 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
         rex_game_generate_random_obstackle();
 
         rex_game_draw_obstackles(ctx);
+        rex_draw_number(ctx, 666, REX_GAME_SCORE_DIGIT_WIDTH, REX_GAME_HI_SCORE_X_POSITION, REX_GAME_HI_SCORE_Y_POSITION);
 
         rex_trex_walk(ctx, MAIN_SCENE_TREX_X, MAIN_SCENE_HORIZON_Y - MAIN_SCENE_FALL_BETWEEN_TREX_HORIZON);
         rex_horizon_line_roll(ctx, MAIN_SCENE_HORIZON_X, MAIN_SCENE_HORIZON_Y);
