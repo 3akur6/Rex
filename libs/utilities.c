@@ -227,8 +227,8 @@ nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, f
 {
     int need_frames_amount_one_way = (int)sqrt((2 * REX_GAME_JUMP_HEIGHT) / REX_GAME_GRAVITY);
     int need_frames_amount = 2 * need_frames_amount_one_way;
-    int rex_jump_initial_velocity = REX_GAME_GRAVITY * need_frames_amount_one_way;
-    //int rex_jump_initial_velocity = (int)(REX_GAME_JUMP_HEIGHT + (REX_GAME_GRAVITY * need_frames_amount_one_way * need_frames_amount_one_way) / 2) / need_frames_amount_one_way;
+    float rex_jump_initial_velocity = REX_GAME_GRAVITY * need_frames_amount_one_way;
+    //float rex_jump_initial_velocity = (REX_GAME_JUMP_HEIGHT + (REX_GAME_GRAVITY * need_frames_amount_one_way * need_frames_amount_one_way) / 2) / need_frames_amount_one_way;
     if (rex_frame > need_frames_amount)
     {
         rex_draw_image(ctx, image_id, x, y);
