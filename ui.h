@@ -44,6 +44,7 @@
 #define REX_GAME_CURRENT_SCORE_X_POSITION 1700
 #define REX_GAME_CURRENT_SCORE_Y_POSITION 340
 #define REX_GAME_FALL_BETWEEN_TREX_HORIZON 68
+#define REX_GAME_OBSTACKLE_CACTUS_Y_POSITION 480
 
 /*============================== objects image ==============================*/
 /* cactus large */
