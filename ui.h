@@ -3,10 +3,10 @@
 
 /* refresh after draw cycles */
 #define REFRESH_CYCLES 1
-#define MAX_FRAME_AMOUNT 256
+#define MAX_FRAME_AMOUNT 65536
 
 /* max buffer size of images */
-#define MAX_IMAGES_AMOUNT 20
+#define MAX_IMAGES_AMOUNT 50
 
 /* max buffer size of path name */
 #define MAX_PATH_LENGTH 50
@@ -21,8 +21,16 @@
 #define REX_GAME_JUMP_STEP 2
 #define REX_GAME_TREX_WALK_SPEED 0x8
 #define REX_GAME_PTERODACTYL_REFRESH_SPEED 0x8
+
+/* pterodactyl fly height (base on horizon line) */
+#define REX_GAME_PTERODACTYL_MAX_HEIGHT 140
+#define REX_GAME_PTERODACTYL_MIN_HEIGHT 90
+
 #define REX_GAME_HORIZON_LINE_ROLL_SPEED 8
 #define REX_GAME_SPEED 1
+
+#define REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MAX 100
+#define REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MIN 1
 
 #define REX_GAME_OBSTACKLE_TYPE_AMOUNT 7
 #define REX_GAME_MAX_OBSTACKLE_AMOUNT 4 /* define the max amount of obstackles drawing in one frame */
@@ -161,21 +169,21 @@
 
 /* cactus large 0 */
 /* x: 652, y: 2 */
-#define IMAGE_CACTUS_LARGE_0_ID 19
+#define IMAGE_CACTUS_LARGE_0_ID 16
 #define IMAGE_CACTUS_LARGE_0_PATH "assets/cactus_large_0.png"
 #define IMAGE_CACTUS_LARGE_0_WIDTH 50
 #define IMAGE_CACTUS_LARGE_0_HEIGHT 100
 
 /* cactus large 1 */
 /* x: 702, y: 2 */
-#define IMAGE_CACTUS_LARGE_1_ID 20
+#define IMAGE_CACTUS_LARGE_1_ID 17
 #define IMAGE_CACTUS_LARGE_1_PATH "assets/cactus_large_1.png"
 #define IMAGE_CACTUS_LARGE_1_WIDTH 100
 #define IMAGE_CACTUS_LARGE_1_HEIGHT 100
 
 /* cactus large 2 */
 /* x: 802, y: 2 */
-#define IMAGE_CACTUS_LARGE_2_ID 22
+#define IMAGE_CACTUS_LARGE_2_ID 18
 #define IMAGE_CACTUS_LARGE_2_PATH "assets/cactus_large_2.png"
 #define IMAGE_CACTUS_LARGE_2_WIDTH 150
 #define IMAGE_CACTUS_LARGE_2_HEIGHT 100

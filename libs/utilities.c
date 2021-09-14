@@ -277,19 +277,261 @@ enum rex_game_obstackle_type
 
 struct rex_game_obstackle
 {
+    nk_bool active; /* only when */
     enum rex_game_obstackle_type type;
     float x;
     float y;
+    unsigned int width;
+    unsigned int height;
+    unsigned int create_at_frame;
 };
-
-enum rex_game_obstackle_type rex_game_random_obstackle(void)
-{
-    srand((unsigned)time(NULL));
-    int random = rand() % REX_GAME_OBSTACKLE_TYPE_AMOUNT;
-
-    return random;
-}
 
 /* can be abstracted as a struct */
 static unsigned char rex_obstackle_amount = 0;
+static unsigned char rex_obstackle_current_index = 0; /* current index points to obstackle, only changed when calling rex_game_get_obstackle */
 static struct rex_game_obstackle rex_obstackles[REX_GAME_MAX_OBSTACKLE_AMOUNT];
+
+void rex_game_generate_random_obstackle(void)
+{
+    if (rex_obstackle_amount >= REX_GAME_MAX_OBSTACKLE_AMOUNT)
+        return;
+
+    struct rex_game_obstackle obstackle;
+    /* activate obstackle */
+    obstackle.active = nk_true;
+
+    srand((unsigned int)time(NULL));
+    enum rex_game_obstackle_type type = rand() % REX_GAME_OBSTACKLE_TYPE_AMOUNT;
+    printf("create obstackle, type: %d\n", type);
+
+    obstackle.type = type;
+    obstackle.x = glfw.width;
+
+    /* pterodactyl obstackle is special, having random y position for each instance */
+    if (type == REX_GAME_OBSTACKLE_PTERODACTYL)
+    {
+        /* regenerate seed */
+        srand((unsigned int)time(NULL));
+        /* random offset in y axis of pterodactyl */
+        int offset = rand() % (REX_GAME_PTERODACTYL_MAX_HEIGHT - REX_GAME_PTERODACTYL_MIN_HEIGHT) + REX_GAME_PTERODACTYL_MIN_HEIGHT;
+
+        obstackle.y = REX_GAME_HORIZON_Y_POSITION - offset;
+    }
+    else
+        obstackle.y = REX_GAME_HORIZON_Y_POSITION;
+
+    srand((unsigned int)time(NULL));
+    unsigned int offset_at_frame = rand() % (REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MAX - REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MIN);
+
+    obstackle.create_at_frame = rex_frame + offset_at_frame;
+
+    if (rex_obstackle_amount == 0)
+    {
+        rex_obstackles[rex_obstackle_amount++] = obstackle;
+        printf("[0: generate] current amount of obstackles: %d\n", rex_obstackle_amount);
+        return;
+    }
+
+    /* replace the oldest inactive obstackle with new obstackle */
+    unsigned int search_index = (REX_GAME_MAX_OBSTACKLE_AMOUNT + rex_obstackle_current_index - 1) % REX_GAME_MAX_OBSTACKLE_AMOUNT;
+    struct rex_game_obstackle current = rex_obstackles[search_index];
+    unsigned int search_times = 0;
+    while (current.active == nk_true && search_times < REX_GAME_MAX_OBSTACKLE_AMOUNT)
+    {
+        search_index = (REX_GAME_MAX_OBSTACKLE_AMOUNT + rex_obstackle_current_index - 1) % REX_GAME_MAX_OBSTACKLE_AMOUNT;
+        current = rex_obstackles[search_index];
+        search_times++;
+    }
+
+    printf("[1: generate] current amount of obstackles: %d\n", rex_obstackle_amount);
+    /* all obstackles are active */
+    if (current.active == nk_true)
+        return;
+
+    /* else find the inactive obstackle which needs to be updated */
+    rex_obstackles[search_index] = obstackle;
+    rex_obstackle_amount++;
+    printf("[2: generate] current amount of obstackles: %d\n", rex_obstackle_amount);
+}
+
+void rex_game_get_obstackle(struct rex_game_obstackle **obstackle)
+{
+    /* no obstackle left in the queue */
+    if (rex_obstackle_amount == 0)
+    {
+        (*obstackle)->active = nk_false;
+        return;
+    }
+
+    struct rex_game_obstackle *current = &rex_obstackles[rex_obstackle_current_index];
+    unsigned int search_times = 0;
+    while (current->active == nk_false && search_times < REX_GAME_MAX_OBSTACKLE_AMOUNT)
+    {
+        /* cycle-move to next */
+        rex_obstackle_current_index = (rex_obstackle_current_index + 1) % REX_GAME_MAX_OBSTACKLE_AMOUNT;
+        current = &rex_obstackles[rex_obstackle_current_index];
+        search_times++;
+    }
+
+    // if (current->active == nk_true)
+    //     rex_obstackle_amount--;
+
+    /* return despite finding active obstackle or not */
+    *obstackle = current;
+
+    printf("get obstackle, type: %d\n", (*obstackle)->type);
+    printf("[0: get] current amount of obstackles: %d\n", rex_obstackle_amount);
+}
+
+void rex_draw_image_since_frame(struct nk_context *ctx, unsigned char image_id, unsigned int frame, float x, float y)
+{
+    if (rex_frame >= frame)
+        rex_draw_image(ctx, image_id, x, y);
+}
+
+void rex_game_draw_obstackles(struct nk_context *ctx)
+{
+    /* count the number of active obstackles then update rex_obstackle_amount */
+    unsigned int obstackle_active_amount = 0;
+
+    struct rex_game_obstackle *obstackle;
+    for (unsigned int i = 0; i < REX_GAME_MAX_OBSTACKLE_AMOUNT; i++)
+    {
+        rex_game_get_obstackle(&obstackle);
+        printf("[0: draw] current amount of obstackles: %d\n", rex_obstackle_amount);
+
+        if (obstackle->active == nk_true)
+        { /* get an active obstackle */
+            obstackle_active_amount++;
+            float current_x = obstackle->x;
+            float current_y = obstackle->y;
+
+            struct rex_image image;
+            switch (obstackle->type)
+            {
+            case REX_GAME_OBSTACKLE_PTERODACTYL:
+            {
+                /* will get image from cached list */
+                image = rex_image_load(IMAGE_PTERODACTYL_0_ID);
+                /* update obstackle width and height */
+                obstackle->width = image.width;
+                obstackle->height = image.height;
+
+                float current_x_right = current_x + obstackle->width;
+                if (current_x_right < 0)
+                    /* object move out of scene */
+                    obstackle->active = nk_false;
+                else if (rex_frame >= obstackle->create_at_frame)
+                {
+                    /* draw obstackle. Update (x, y) will be done out of switch for all obstackles */
+                    rex_pterodactyl_fly(ctx, current_x, current_y);
+                    printf("[draw] pterodactyl at (%f, %f)\n", current_x, current_y);
+                }
+
+                break;
+            }
+            case REX_GAME_OBSTACKLE_CACTUS_SMALL_0:
+            {
+                image = rex_image_load(IMAGE_CACTUS_SMALL_0_ID);
+                obstackle->width = image.width;
+                obstackle->height = image.height;
+
+                float current_x_right = current_x + obstackle->width;
+                if (current_x_right < 0)
+                    obstackle->active = nk_false;
+                else
+                {
+                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_0_ID, obstackle->create_at_frame, current_x, current_y);
+                    printf("[draw] cactus_small_0 at (%f, %f)\n", current_x, current_y);
+                }
+                break;
+            }
+            case REX_GAME_OBSTACKLE_CACTUS_SMALL_1:
+            {
+                image = rex_image_load(IMAGE_CACTUS_SMALL_1_ID);
+                obstackle->width = image.width;
+                obstackle->height = image.height;
+
+                float current_x_right = current_x + obstackle->width;
+                if (current_x_right < 0)
+                    obstackle->active = nk_false;
+                else
+                {
+                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_1_ID, obstackle->create_at_frame, current_x, current_y);
+                    printf("[draw] cactus_small_1 at (%f, %f)\n", current_x, current_y);
+                }
+                break;
+            }
+            case REX_GAME_OBSTACKLE_CACTUS_SMALL_2:
+            {
+                image = rex_image_load(IMAGE_CACTUS_SMALL_2_ID);
+                obstackle->width = image.width;
+                obstackle->height = image.height;
+
+                float current_x_right = current_x + obstackle->width;
+                if (current_x_right < 0)
+                    obstackle->active = nk_false;
+                else
+                {
+                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_2_ID, obstackle->create_at_frame, current_x, current_y);
+                    printf("[draw] cactus_small_2 at (%f, %f)\n", current_x, current_y);
+                }
+                break;
+            }
+            case REX_GAME_OBSTACKLE_CACTUS_LARGE_0:
+            {
+                image = rex_image_load(IMAGE_CACTUS_LARGE_0_ID);
+                obstackle->width = image.width;
+                obstackle->height = image.height;
+
+                float current_x_right = current_x + obstackle->width;
+                if (current_x_right < 0)
+                    obstackle->active = nk_false;
+                else
+                {
+                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_0_ID, obstackle->create_at_frame, current_x, current_y);
+                    printf("[draw] cactus_large_0 at (%f, %f)\n", current_x, current_y);
+                }
+                break;
+            }
+            case REX_GAME_OBSTACKLE_CACTUS_LARGE_1:
+            {
+                image = rex_image_load(IMAGE_CACTUS_LARGE_1_ID);
+                obstackle->width = image.width;
+                obstackle->height = image.height;
+
+                float current_x_right = current_x + obstackle->width;
+                if (current_x_right < 0)
+                    obstackle->active = nk_false;
+                else
+                {
+                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_1_ID, obstackle->create_at_frame, current_x, current_y);
+                    printf("[draw] cactus_large_1 at (%f, %f)\n", current_x, current_y);
+                }
+                break;
+            }
+            case REX_GAME_OBSTACKLE_CACTUS_LARGE_2:
+            {
+                image = rex_image_load(IMAGE_CACTUS_LARGE_2_ID);
+                obstackle->width = image.width;
+                obstackle->height = image.height;
+
+                float current_x_right = current_x + obstackle->width;
+                if (current_x_right < 0)
+                    obstackle->active = nk_false;
+                else
+                {
+                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_2_ID, obstackle->create_at_frame, current_x, current_y);
+                    printf("[draw] cactus_large_2 at (%f, %f)\n", current_x, current_y);
+                }
+                break;
+            }
+            }
+            /* update (x, y) here */
+            obstackle->x -= rex_game_speed;
+        }
+    }
+
+    /* update rex_obstackle_amount */
+    rex_obstackle_amount = obstackle_active_amount;
+}
