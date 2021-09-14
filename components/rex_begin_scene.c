@@ -10,7 +10,7 @@ void rex_begin_scene_prompt_text(struct nk_context *ctx, float x, float y)
     /* set the style of the start button*/
     set_style(ctx, THEME_PROMPT_TEXT);
 
-    if (nk_begin(ctx, "Prompt Text", nk_rect(x, y, BEGIN_SCENE_PROMT_TEXT_WIDTH, BEGIN_SCENE_PROMT_TEXT_HEIGHT), NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR))
+    if (nk_begin(ctx, "Prompt Text", nk_rect(x, y, BEGIN_SCENE_PROMT_TEXT_WIDTH, BEGIN_SCENE_PROMT_TEXT_HEIGHT), NK_WINDOW_NO_SCROLLBAR))
     {
         nk_layout_row_dynamic(ctx, BEGIN_SCENE_PROMT_TEXT_ROW_HEIGHT, 1);
 
@@ -38,7 +38,7 @@ enum rex_begin_scene_event rex_begin_scene(struct nk_context *ctx, float window_
 {
     enum rex_begin_scene_event event = REX_BEGIN_SCENE_NOTHING_HAPPEN;
     /* change style here if necessary */
-    set_style(ctx, THEME_PROMPT_TEXT);
+    set_style(ctx, THEME_ALL_SCENES);
 
     /* draw scene here */
     rex_begin_scene_prompt_text(ctx, BEGIN_SCENE_PROMT_TEXT_X, BEGIN_SCENE_PROMT_TEXT_Y);
