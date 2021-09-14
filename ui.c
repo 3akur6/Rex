@@ -23,13 +23,19 @@ void ui_init(struct nk_context *ctx)
         nk_glfw3_font_stash_begin(&atlas);
 
         { /* add new fonts here */
-            //rex_fonts[0].font = nk_font_atlas_add_from_file(atlas, "fonts/DroidSans.ttf", 20, 0);
             rex_fonts[0].font = nk_font_atlas_add_from_file(atlas, "fonts/Apple.ttf", 30, 0);
             rex_fonts[0].height = 30;
         }
 
         nk_glfw3_font_stash_end();
         nk_style_set_font(ctx, &rex_fonts[0].font->handle);
+    }
+
+    /* init rex_obstackles */
+    {
+        for (unsigned int i = 0; i < REX_GAME_MAX_OBSTACKLE_AMOUNT; i++)
+            /* default status set to inactive */
+            rex_obstackles[i].active = nk_false;
     }
 
     return;

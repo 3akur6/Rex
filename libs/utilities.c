@@ -229,7 +229,7 @@ nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, f
     int need_frames_amount = 2 * need_frames_amount_one_way;
     int rex_jump_initial_velocity = (int)(REX_GAME_JUMP_HEIGHT + (REX_GAME_GRAVITY * need_frames_amount_one_way * need_frames_amount_one_way) / 2) / need_frames_amount_one_way;
     if (rex_frame > need_frames_amount)
-    {
+    { /* draw static image */
         rex_draw_image(ctx, image_id, x, y);
         return nk_true;
     }
@@ -296,19 +296,35 @@ enum rex_game_obstackle_type
 
 struct rex_game_obstackle
 {
-    nk_bool active; /* only when */
+    nk_bool active;
     enum rex_game_obstackle_type type;
     float x;
     float y;
     unsigned int width;
     unsigned int height;
     unsigned int create_at_frame;
+    unsigned int destroy_at_frame;
 };
 
 /* can be abstracted as a struct */
 static unsigned char rex_obstackle_amount = 0;
-static unsigned char rex_obstackle_current_index = 0; /* current index points to obstackle, only changed when calling rex_game_get_obstackle */
 static struct rex_game_obstackle rex_obstackles[REX_GAME_MAX_OBSTACKLE_AMOUNT];
+
+void rex_print_rex_obstackles(void)
+{
+    printf("[rex_print_rex_obstackles (%d)]\n", rex_obstackle_amount);
+    for (unsigned int i = 0; i < rex_obstackle_amount; i++)
+    {
+        struct rex_game_obstackle obstackle = rex_obstackles[i];
+        printf(
+            "\t%u: type->%d, (x,y)->(%f,%f), width->%d, height->%d, create_at_frame->%d, destroy_at_frame->%d\n",
+            i,
+            obstackle.type,
+            obstackle.x, obstackle.y,
+            obstackle.width, obstackle.height,
+            obstackle.create_at_frame, obstackle.destroy_at_frame);
+    }
+}
 
 void rex_game_generate_random_obstackle(void)
 {
@@ -319,9 +335,9 @@ void rex_game_generate_random_obstackle(void)
     /* activate obstackle */
     obstackle.active = nk_true;
 
+    /* get random type */
     srand((unsigned int)time(NULL));
     enum rex_game_obstackle_type type = rand() % REX_GAME_OBSTACKLE_TYPE_AMOUNT;
-    printf("create obstackle, type: %d\n", type);
 
     obstackle.type = type;
     obstackle.x = glfw.width;
@@ -340,66 +356,23 @@ void rex_game_generate_random_obstackle(void)
         obstackle.y = REX_GAME_HORIZON_Y_POSITION;
 
     srand((unsigned int)time(NULL));
-    unsigned int offset_at_frame = rand() % (REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MAX - REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MIN);
+    unsigned int offset_at_frame = rand() % (REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MAX - REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MIN) + REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MIN;
 
-    obstackle.create_at_frame = rex_frame + offset_at_frame;
+    obstackle.create_at_frame = (rex_frame + offset_at_frame) % MAX_FRAME_AMOUNT;
 
-    if (rex_obstackle_amount == 0)
+    /* replace one of the inactive obstackle with new obstackle */
+    for (unsigned int i = 0; i < REX_GAME_MAX_OBSTACKLE_AMOUNT; i++)
     {
-        rex_obstackles[rex_obstackle_amount++] = obstackle;
-        printf("[0: generate] current amount of obstackles: %d\n", rex_obstackle_amount);
-        return;
+        if (rex_obstackles[i].active == nk_false)
+        {
+            rex_obstackles[i] = obstackle;
+            rex_obstackle_amount++;
+            return;
+        }
     }
 
-    /* replace the oldest inactive obstackle with new obstackle */
-    unsigned int search_index = (REX_GAME_MAX_OBSTACKLE_AMOUNT + rex_obstackle_current_index - 1) % REX_GAME_MAX_OBSTACKLE_AMOUNT;
-    struct rex_game_obstackle current = rex_obstackles[search_index];
-    unsigned int search_times = 0;
-    while (current.active == nk_true && search_times < REX_GAME_MAX_OBSTACKLE_AMOUNT)
-    {
-        search_index = (REX_GAME_MAX_OBSTACKLE_AMOUNT + rex_obstackle_current_index - 1) % REX_GAME_MAX_OBSTACKLE_AMOUNT;
-        current = rex_obstackles[search_index];
-        search_times++;
-    }
-
-    printf("[1: generate] current amount of obstackles: %d\n", rex_obstackle_amount);
     /* all obstackles are active */
-    if (current.active == nk_true)
-        return;
-
-    /* else find the inactive obstackle which needs to be updated */
-    rex_obstackles[search_index] = obstackle;
-    rex_obstackle_amount++;
-    printf("[2: generate] current amount of obstackles: %d\n", rex_obstackle_amount);
-}
-
-void rex_game_get_obstackle(struct rex_game_obstackle **obstackle)
-{
-    /* no obstackle left in the queue */
-    if (rex_obstackle_amount == 0)
-    {
-        (*obstackle)->active = nk_false;
-        return;
-    }
-
-    struct rex_game_obstackle *current = &rex_obstackles[rex_obstackle_current_index];
-    unsigned int search_times = 0;
-    while (current->active == nk_false && search_times < REX_GAME_MAX_OBSTACKLE_AMOUNT)
-    {
-        /* cycle-move to next */
-        rex_obstackle_current_index = (rex_obstackle_current_index + 1) % REX_GAME_MAX_OBSTACKLE_AMOUNT;
-        current = &rex_obstackles[rex_obstackle_current_index];
-        search_times++;
-    }
-
-    // if (current->active == nk_true)
-    //     rex_obstackle_amount--;
-
-    /* return despite finding active obstackle or not */
-    *obstackle = current;
-
-    printf("get obstackle, type: %d\n", (*obstackle)->type);
-    printf("[0: get] current amount of obstackles: %d\n", rex_obstackle_amount);
+    return;
 }
 
 void rex_draw_image_since_frame(struct nk_context *ctx, unsigned char image_id, unsigned int frame, float x, float y)
@@ -416,8 +389,7 @@ void rex_game_draw_obstackles(struct nk_context *ctx)
     struct rex_game_obstackle *obstackle;
     for (unsigned int i = 0; i < REX_GAME_MAX_OBSTACKLE_AMOUNT; i++)
     {
-        rex_game_get_obstackle(&obstackle);
-        printf("[0: draw] current amount of obstackles: %d\n", rex_obstackle_amount);
+        obstackle = &rex_obstackles[i];
 
         if (obstackle->active == nk_true)
         { /* get an active obstackle */
@@ -437,16 +409,31 @@ void rex_game_draw_obstackles(struct nk_context *ctx)
                 obstackle->height = image.height;
 
                 float current_x_right = current_x + obstackle->width;
-                if (current_x_right < 0)
-                    /* object move out of scene */
-                    obstackle->active = nk_false;
-                else if (rex_frame >= obstackle->create_at_frame)
-                {
-                    /* draw obstackle. Update (x, y) will be done out of switch for all obstackles */
-                    rex_pterodactyl_fly(ctx, current_x, current_y);
-                    printf("[draw] pterodactyl at (%f, %f)\n", current_x, current_y);
-                }
+                unsigned int need_frames = current_x_right / rex_game_speed;
+                obstackle->destroy_at_frame = (rex_frame + need_frames) % MAX_FRAME_AMOUNT;
 
+                if (current_x_right < 0)
+                    obstackle->active = nk_false;
+                /* ugly code */
+                if (obstackle->create_at_frame < obstackle->destroy_at_frame)
+                { /* create_at_frame < destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame && rex_frame < obstackle->destroy_at_frame)
+                    {
+                        /* draw obstackle. Update (x, y) will be done out of switch for all obstackles */
+                        rex_pterodactyl_fly(ctx, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
+                }
+                else
+                { /* create_at_frame > destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame || rex_frame < obstackle->destroy_at_frame)
+                    {
+                        rex_pterodactyl_fly(ctx, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
+                }
                 break;
             }
             case REX_GAME_OBSTACKLE_CACTUS_SMALL_0:
@@ -456,12 +443,30 @@ void rex_game_draw_obstackles(struct nk_context *ctx)
                 obstackle->height = image.height;
 
                 float current_x_right = current_x + obstackle->width;
+                unsigned int need_frames = current_x_right / rex_game_speed;
+                obstackle->destroy_at_frame = (rex_frame + need_frames) % MAX_FRAME_AMOUNT;
+
                 if (current_x_right < 0)
                     obstackle->active = nk_false;
+                /* ugly code */
+                if (obstackle->create_at_frame < obstackle->destroy_at_frame)
+                { /* create_at_frame < destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame && rex_frame < obstackle->destroy_at_frame)
+                    {
+                        /* draw obstackle. Update (x, y) will be done out of switch for all obstackles */
+                        rex_draw_image(ctx, IMAGE_CACTUS_SMALL_0_ID, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
+                }
                 else
-                {
-                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_0_ID, obstackle->create_at_frame, current_x, current_y);
-                    printf("[draw] cactus_small_0 at (%f, %f)\n", current_x, current_y);
+                { /* create_at_frame > destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame || rex_frame < obstackle->destroy_at_frame)
+                    {
+                        rex_draw_image(ctx, IMAGE_CACTUS_SMALL_0_ID, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
                 }
                 break;
             }
@@ -472,12 +477,30 @@ void rex_game_draw_obstackles(struct nk_context *ctx)
                 obstackle->height = image.height;
 
                 float current_x_right = current_x + obstackle->width;
+                unsigned int need_frames = current_x_right / rex_game_speed;
+                obstackle->destroy_at_frame = (rex_frame + need_frames) % MAX_FRAME_AMOUNT;
+
                 if (current_x_right < 0)
                     obstackle->active = nk_false;
+                /* ugly code */
+                if (obstackle->create_at_frame < obstackle->destroy_at_frame)
+                { /* create_at_frame < destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame && rex_frame < obstackle->destroy_at_frame)
+                    {
+                        /* draw obstackle. Update (x, y) will be done out of switch for all obstackles */
+                        rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_1_ID, obstackle->create_at_frame, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
+                }
                 else
-                {
-                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_1_ID, obstackle->create_at_frame, current_x, current_y);
-                    printf("[draw] cactus_small_1 at (%f, %f)\n", current_x, current_y);
+                { /* create_at_frame > destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame || rex_frame < obstackle->destroy_at_frame)
+                    {
+                        rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_1_ID, obstackle->create_at_frame, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
                 }
                 break;
             }
@@ -488,12 +511,30 @@ void rex_game_draw_obstackles(struct nk_context *ctx)
                 obstackle->height = image.height;
 
                 float current_x_right = current_x + obstackle->width;
+                unsigned int need_frames = current_x_right / rex_game_speed;
+                obstackle->destroy_at_frame = (rex_frame + need_frames) % MAX_FRAME_AMOUNT;
+
                 if (current_x_right < 0)
                     obstackle->active = nk_false;
+                /* ugly code */
+                if (obstackle->create_at_frame < obstackle->destroy_at_frame)
+                { /* create_at_frame < destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame && rex_frame < obstackle->destroy_at_frame)
+                    {
+                        /* draw obstackle. Update (x, y) will be done out of switch for all obstackles */
+                        rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_2_ID, obstackle->create_at_frame, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
+                }
                 else
-                {
-                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_2_ID, obstackle->create_at_frame, current_x, current_y);
-                    printf("[draw] cactus_small_2 at (%f, %f)\n", current_x, current_y);
+                { /* create_at_frame > destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame || rex_frame < obstackle->destroy_at_frame)
+                    {
+                        rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_2_ID, obstackle->create_at_frame, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
                 }
                 break;
             }
@@ -504,12 +545,31 @@ void rex_game_draw_obstackles(struct nk_context *ctx)
                 obstackle->height = image.height;
 
                 float current_x_right = current_x + obstackle->width;
+                unsigned int need_frames = current_x_right / rex_game_speed;
+                obstackle->destroy_at_frame = (rex_frame + need_frames) % MAX_FRAME_AMOUNT;
+
                 if (current_x_right < 0)
                     obstackle->active = nk_false;
+
+                /* ugly code */
+                if (obstackle->create_at_frame < obstackle->destroy_at_frame)
+                { /* create_at_frame < destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame && rex_frame < obstackle->destroy_at_frame)
+                    {
+                        /* draw obstackle. Update (x, y) will be done out of switch for all obstackles */
+                        rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_0_ID, obstackle->create_at_frame, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
+                }
                 else
-                {
-                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_0_ID, obstackle->create_at_frame, current_x, current_y);
-                    printf("[draw] cactus_large_0 at (%f, %f)\n", current_x, current_y);
+                { /* create_at_frame > destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame || rex_frame < obstackle->destroy_at_frame)
+                    {
+                        rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_0_ID, obstackle->create_at_frame, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
                 }
                 break;
             }
@@ -520,12 +580,30 @@ void rex_game_draw_obstackles(struct nk_context *ctx)
                 obstackle->height = image.height;
 
                 float current_x_right = current_x + obstackle->width;
+                unsigned int need_frames = current_x_right / rex_game_speed;
+                obstackle->destroy_at_frame = (rex_frame + need_frames) % MAX_FRAME_AMOUNT;
+
                 if (current_x_right < 0)
                     obstackle->active = nk_false;
+                /* ugly code */
+                if (obstackle->create_at_frame < obstackle->destroy_at_frame)
+                { /* create_at_frame < destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame && rex_frame < obstackle->destroy_at_frame)
+                    {
+                        /* draw obstackle. Update (x, y) will be done out of switch for all obstackles */
+                        rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_1_ID, obstackle->create_at_frame, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
+                }
                 else
-                {
-                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_1_ID, obstackle->create_at_frame, current_x, current_y);
-                    printf("[draw] cactus_large_1 at (%f, %f)\n", current_x, current_y);
+                { /* create_at_frame > destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame || rex_frame < obstackle->destroy_at_frame)
+                    {
+                        rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_1_ID, obstackle->create_at_frame, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
                 }
                 break;
             }
@@ -536,21 +614,38 @@ void rex_game_draw_obstackles(struct nk_context *ctx)
                 obstackle->height = image.height;
 
                 float current_x_right = current_x + obstackle->width;
+                unsigned int need_frames = current_x_right / rex_game_speed;
+                obstackle->destroy_at_frame = (rex_frame + need_frames) % MAX_FRAME_AMOUNT;
+
                 if (current_x_right < 0)
                     obstackle->active = nk_false;
+                /* ugly code */
+                if (obstackle->create_at_frame < obstackle->destroy_at_frame)
+                { /* create_at_frame < destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame && rex_frame < obstackle->destroy_at_frame)
+                    {
+                        /* draw obstackle. Update (x, y) will be done out of switch for all obstackles */
+                        rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_2_ID, obstackle->create_at_frame, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
+                }
                 else
-                {
-                    rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_2_ID, obstackle->create_at_frame, current_x, current_y);
-                    printf("[draw] cactus_large_2 at (%f, %f)\n", current_x, current_y);
+                { /* create_at_frame > destroy_at_frame */
+                    if (rex_frame >= obstackle->create_at_frame || rex_frame < obstackle->destroy_at_frame)
+                    {
+                        rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_2_ID, obstackle->create_at_frame, current_x, current_y);
+                        /* update (x, y) here */
+                        obstackle->x -= rex_game_speed * REX_GAME_OBSTACKLE_MOVE_SPEED;
+                    }
                 }
                 break;
             }
             }
-            /* update (x, y) here */
-            obstackle->x -= rex_game_speed;
         }
     }
 
     /* update rex_obstackle_amount */
     rex_obstackle_amount = obstackle_active_amount;
+    rex_print_rex_obstackles();
 }
