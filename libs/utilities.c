@@ -206,9 +206,28 @@ void rex_ymove_image_from_to_gradually(struct nk_context *ctx, unsigned char ima
     rex_draw_image(ctx, image_id, x, from_y - step_y * rex_frame);
 }
 
+// nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, float y)
+// {
+//     int need_frames_amount = (2 * REX_GAME_JUMP_HEIGHT) / REX_GAME_JUMP_STEP;
+//     if (rex_frame > need_frames_amount)
+//     {
+//         rex_draw_image(ctx, image_id, x, y);
+//         return nk_true;
+//     }
+
+//     if (rex_frame < (need_frames_amount / 2))
+//         rex_draw_image(ctx, image_id, x, y - rex_frame * REX_GAME_JUMP_STEP);
+//     else
+//         rex_draw_image(ctx, image_id, x, y - REX_GAME_JUMP_HEIGHT + (rex_frame - need_frames_amount / 2) * REX_GAME_JUMP_STEP);
+
+//     return nk_false;
+// }
+
 nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, float y)
 {
-    int need_frames_amount = (2 * REX_GAME_JUMP_HEIGHT) / REX_GAME_JUMP_STEP;
+    int need_frames_amount_one_way = (int)sqrt((2 * REX_GAME_JUMP_HEIGHT) / REX_GAME_GRAVITY);
+    int need_frames_amount = 2 * need_frames_amount_one_way;
+    int rex_jump_initial_velocity = (int)(REX_GAME_JUMP_HEIGHT + (REX_GAME_GRAVITY * need_frames_amount_one_way * need_frames_amount_one_way) / 2) / need_frames_amount_one_way;
     if (rex_frame > need_frames_amount)
     {
         rex_draw_image(ctx, image_id, x, y);
@@ -216,9 +235,9 @@ nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, f
     }
 
     if (rex_frame < (need_frames_amount / 2))
-        rex_draw_image(ctx, image_id, x, y - rex_frame * REX_GAME_JUMP_STEP);
+        rex_draw_image(ctx, image_id, x, y - (rex_jump_initial_velocity * rex_frame - (REX_GAME_GRAVITY * rex_frame * rex_frame) / 2));
     else
-        rex_draw_image(ctx, image_id, x, y - REX_GAME_JUMP_HEIGHT + (rex_frame - need_frames_amount / 2) * REX_GAME_JUMP_STEP);
+        rex_draw_image(ctx, image_id, x, y - REX_GAME_JUMP_HEIGHT + (REX_GAME_GRAVITY * (rex_frame - need_frames_amount_one_way) * (rex_frame - need_frames_amount_one_way)) / 2);
 
     return nk_false;
 }
