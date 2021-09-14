@@ -227,14 +227,15 @@ nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, f
 {
     int need_frames_amount_one_way = (int)sqrt((2 * REX_GAME_JUMP_HEIGHT) / REX_GAME_GRAVITY);
     int need_frames_amount = 2 * need_frames_amount_one_way;
-    int rex_jump_initial_velocity = (int)(REX_GAME_JUMP_HEIGHT + (REX_GAME_GRAVITY * need_frames_amount_one_way * need_frames_amount_one_way) / 2) / need_frames_amount_one_way;
+    float rex_jump_initial_velocity = REX_GAME_GRAVITY * need_frames_amount_one_way;
+    //float rex_jump_initial_velocity = (REX_GAME_JUMP_HEIGHT + (REX_GAME_GRAVITY * need_frames_amount_one_way * need_frames_amount_one_way) / 2) / need_frames_amount_one_way;
     if (rex_frame > need_frames_amount)
     { /* draw static image */
         rex_draw_image(ctx, image_id, x, y);
         return nk_true;
     }
 
-    if (rex_frame < (need_frames_amount / 2))
+    if (rex_frame < need_frames_amount_one_way)
         rex_draw_image(ctx, image_id, x, y - (rex_jump_initial_velocity * rex_frame - (REX_GAME_GRAVITY * rex_frame * rex_frame) / 2));
     else
         rex_draw_image(ctx, image_id, x, y - REX_GAME_JUMP_HEIGHT + (REX_GAME_GRAVITY * (rex_frame - need_frames_amount_one_way) * (rex_frame - need_frames_amount_one_way)) / 2);
@@ -353,7 +354,7 @@ void rex_game_generate_random_obstackle(void)
         obstackle.y = REX_GAME_HORIZON_Y_POSITION - offset;
     }
     else
-        obstackle.y = REX_GAME_HORIZON_Y_POSITION;
+        obstackle.y = REX_GAME_OBSTACKLE_CACTUS_Y_POSITION;
 
     srand((unsigned int)time(NULL));
     unsigned int offset_at_frame = rand() % (REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MAX - REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MIN) + REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MIN;
