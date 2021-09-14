@@ -327,8 +327,22 @@ void rex_game_generate_random_obstackle(void)
     obstackle.type = type;
     obstackle.x = glfw.width;
 
-    /* pterodactyl obstackle is special, having random y position for each instance */
-    if (type == REX_GAME_OBSTACKLE_PTERODACTYL)
+    // /* pterodactyl obstackle is special, having random y position for each instance */
+    // if (type == REX_GAME_OBSTACKLE_PTERODACTYL)
+    // {
+    //     /* regenerate seed */
+    //     srand((unsigned int)time(NULL));
+    //     /* random offset in y axis of pterodactyl */
+    //     int offset = rand() % (REX_GAME_PTERODACTYL_MAX_HEIGHT - REX_GAME_PTERODACTYL_MIN_HEIGHT) + REX_GAME_PTERODACTYL_MIN_HEIGHT;
+
+    //     obstackle.y = REX_GAME_HORIZON_Y_POSITION - offset;
+    // }
+    // else
+    //     obstackle.y = REX_GAME_OBSTACKLE_CACTUS_Y_POSITION;
+
+    switch (type)
+    {
+    case REX_GAME_OBSTACKLE_PTERODACTYL:
     {
         /* regenerate seed */
         srand((unsigned int)time(NULL));
@@ -336,9 +350,23 @@ void rex_game_generate_random_obstackle(void)
         int offset = rand() % (REX_GAME_PTERODACTYL_MAX_HEIGHT - REX_GAME_PTERODACTYL_MIN_HEIGHT) + REX_GAME_PTERODACTYL_MIN_HEIGHT;
 
         obstackle.y = REX_GAME_HORIZON_Y_POSITION - offset;
+        break;
     }
-    else
-        obstackle.y = REX_GAME_OBSTACKLE_CACTUS_Y_POSITION;
+    case REX_GAME_OBSTACKLE_CACTUS_SMALL_0:
+    case REX_GAME_OBSTACKLE_CACTUS_SMALL_1:
+    case REX_GAME_OBSTACKLE_CACTUS_SMALL_2:
+    {
+        obstackle.y = REX_GAME_CACTUS_SMALL_Y_POSITION;
+        break;
+    }
+    case REX_GAME_OBSTACKLE_CACTUS_LARGE_0:
+    case REX_GAME_OBSTACKLE_CACTUS_LARGE_1:
+    case REX_GAME_OBSTACKLE_CACTUS_LARGE_2:
+    {
+        obstackle.y = REX_GAME_CACTUS_LARGE_Y_POSITION;
+        break;
+    }
+    }
 
     srand((unsigned int)time(NULL));
     unsigned int offset_at_frame = rand() % (REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MAX - REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MIN);
