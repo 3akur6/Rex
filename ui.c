@@ -23,7 +23,6 @@ void ui_init(struct nk_context *ctx)
         nk_glfw3_font_stash_begin(&atlas);
 
         { /* add new fonts here */
-            //rex_fonts[0].font = nk_font_atlas_add_from_file(atlas, "fonts/DroidSans.ttf", 20, 0);
             rex_fonts[0].font = nk_font_atlas_add_from_file(atlas, "fonts/Apple.ttf", 30, 0);
             rex_fonts[0].height = 30;
         }
@@ -53,6 +52,7 @@ void ui_run(struct nk_context *ctx, float width, float height)
     case REX_MAIN_SCENE:
         switch (rex_main_scene(ctx, width, height))
         {
+        case REX_MAIN_SCENE_SPACE_PRESSED:
         default:
             goto REX_GOTO_NOTHING_HAPPEN;
         }

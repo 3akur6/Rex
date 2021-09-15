@@ -46,7 +46,7 @@ enum rex_begin_scene_event rex_begin_scene(struct nk_context *ctx, float window_
     nk_begin(ctx, BEGIN_SCENE_NAME, nk_rect(0, 0, window_width, window_height), NK_WINDOW_BACKGROUND);
 
     int space_status = rex_get_space_status();
-    if (rex_event_lock == nk_false)
+    if (rex_scene_lock == nk_false)
     {
         /* detect event */
         /* detect space event */
@@ -55,7 +55,7 @@ enum rex_begin_scene_event rex_begin_scene(struct nk_context *ctx, float window_
         case REX_KEY_HOLD:
         case REX_KEY_PRESS:
             /* event lock */
-            rex_event_lock = nk_true;
+            rex_scene_lock = nk_true;
 
             break;
         case REX_KEY_RELEASE:
@@ -66,12 +66,12 @@ enum rex_begin_scene_event rex_begin_scene(struct nk_context *ctx, float window_
 
     /* must be place in the background window */
     /* first jump */
-    if (rex_event_lock == nk_true)
+    if (rex_scene_lock == nk_true)
     {
         rex_begin_frames();
         if (rex_trex_jump(ctx, IMAGE_TREX_2_ID, BEGIN_SCENE_TREX_X, BEGIN_SCENE_TREX_Y - BEGIN_SCENE_FALL_BETWEEN_TREX_HORIZON) == nk_true)
         { /* trex finishes jumping */
-            rex_event_lock = nk_false;
+            rex_scene_lock = nk_false;
             event = REX_BEGIN_SCENE_SPACE_PRESSED;
             rex_end_frames();
 

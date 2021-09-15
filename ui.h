@@ -3,7 +3,7 @@
 
 /* refresh after draw cycles */
 #define REFRESH_CYCLES 1
-#define MAX_FRAME_AMOUNT 65536
+#define MAX_FRAME_AMOUNT 10000
 
 /* max buffer size of images */
 #define MAX_IMAGES_AMOUNT 50
@@ -16,7 +16,7 @@
 #define WINDOW_HEIGHT 1080
 
 /* game settings */
-#define REX_GAME_GRAVITY 0.6
+#define REX_GAME_GRAVITY 0.8
 #define REX_GAME_JUMP_HEIGHT 140
 #define REX_GAME_JUMP_STEP 2
 #define REX_GAME_TREX_WALK_SPEED 0x8
@@ -24,16 +24,22 @@
 
 /* pterodactyl fly height (base on horizon line) */
 #define REX_GAME_PTERODACTYL_MAX_HEIGHT 140
-#define REX_GAME_PTERODACTYL_MIN_HEIGHT 90
+#define REX_GAME_PTERODACTYL_MIN_HEIGHT 50
 
-#define REX_GAME_HORIZON_LINE_ROLL_SPEED 8
+#define REX_GAME_HORIZON_LINE_ROLL_SPEED 4
+#define REX_GAME_OBJECT_MOVE_SPEED REX_GAME_HORIZON_LINE_ROLL_SPEED
 #define REX_GAME_SPEED 1
 
-#define REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MAX 100
-#define REX_GAME_CREATE_OBSTACKLE_AFTER_FRAME_MIN 1
+#define REX_GAME_CREATE_OBSTACLE_AFTER_FRAME_MAX 1000
+#define REX_GAME_CREATE_OBSTACLE_AFTER_FRAME_MIN 1
 
-#define REX_GAME_OBSTACKLE_TYPE_AMOUNT 7
-#define REX_GAME_MAX_OBSTACKLE_AMOUNT 4 /* define the max amount of obstackles drawing in one frame */
+#define REX_GAME_OBSTACLE_TYPE_AMOUNT 7
+#define REX_GAME_DECORATION_TYPE_AMOUNT 1
+
+#define REX_GAME_MAX_OBSTACLE_AMOUNT 4   /* define the max amount of obstacles drawing in one frame */
+#define REX_GAME_MAX_DECORATION_AMOUNT 4 /* define the max amount of decorations drawing in one frame */
+
+#define REX_GAME_MAX_OBJECT_AMOUNT (REX_GAME_MAX_OBSTACLE_AMOUNT + REX_GAME_MAX_DECORATION_AMOUNT + 1) /* 1 is preserved for trex */
 
 #define REX_GAME_TREX_X_POSITION 100
 #define REX_GAME_TREX_Y_POSITION 540
@@ -44,12 +50,13 @@
 #define REX_GAME_PTERODACTYL_Y_POSITION_1 200
 #define REX_GAME_PTERODACTYL_Y_POSITION_2 436
 #define REX_GAME_PTERODACTYL_Y_POSITION_3 386
+#define REX_GAME_SCORE_DIGIT_WIDTH 5
 #define REX_GAME_HI_SCORE_X_POSITION 1400
 #define REX_GAME_HI_SCORE_Y_POSITION 340
 #define REX_GAME_CURRENT_SCORE_X_POSITION 1700
 #define REX_GAME_CURRENT_SCORE_Y_POSITION 340
 #define REX_GAME_FALL_BETWEEN_TREX_HORIZON 68
-#define REX_GAME_OBSTACKLE_CACTUS_Y_POSITION 480
+#define REX_GAME_OBJECT_CACTUS_Y_POSITION 480
 
 /*============================== objects image ==============================*/
 /* cactus large */
@@ -243,7 +250,7 @@
 /* global varible */
 static unsigned char rex_refresh_cycle = 0; /* refresh cycle */
 static unsigned int rex_frame = 0;          /* frames */
-static nk_bool rex_event_lock = nk_false;   /* not handle event when lock */
+static nk_bool rex_scene_lock = nk_false;   /* not switch scene when lock */
 
 static unsigned char rex_game_speed = REX_GAME_SPEED;
 static unsigned int rex_hi_score = 99999;
