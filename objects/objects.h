@@ -35,7 +35,7 @@ struct rex_game_object
     enum rex_game_object_type type;
     union
     {
-        enum rex_game_object_type obstacle;
+        enum rex_game_obstacle_type obstacle;
         enum rex_game_decoration_type decoration;
         enum rex_game_trex_type trex;
     } detail;

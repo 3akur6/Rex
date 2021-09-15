@@ -22,6 +22,23 @@ void rex_debug_print_rex_objects(void)
     }
 }
 
+void rex_game_generate_random_object(void)
+{ /* create a complete object */
+    /* get random type */
+    srand((unsigned int)time(NULL));
+    enum rex_game_object_type type = rand() % (REX_GAME_OBJECT_TYPE - 1) + 2;
+
+    switch (type)
+    {
+    case REX_GAME_OBJECT_OBSTACLE:
+        rex_game_generate_random_obstacle();
+        break;
+    case REX_GAME_OBJECT_DECORATION:
+        rex_game_generate_random_decoration();
+        break;
+    }
+}
+
 void rex_game_draw_objects(struct nk_context *ctx)
 {
     /* count the number of active objects then update rex_object_amount */

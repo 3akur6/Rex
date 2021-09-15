@@ -26,6 +26,7 @@
 #define REX_GAME_PTERODACTYL_MAX_HEIGHT 140
 #define REX_GAME_PTERODACTYL_MIN_HEIGHT 50
 
+#define REX_GAME_CLOUD_SPEED 2
 #define REX_GAME_HORIZON_LINE_ROLL_SPEED 4
 #define REX_GAME_OBJECT_MOVE_SPEED REX_GAME_HORIZON_LINE_ROLL_SPEED
 #define REX_GAME_SPEED 1
@@ -39,6 +40,7 @@
 #define REX_GAME_MAX_OBSTACLE_AMOUNT 4   /* define the max amount of obstacles drawing in one frame */
 #define REX_GAME_MAX_DECORATION_AMOUNT 4 /* define the max amount of decorations drawing in one frame */
 
+#define REX_GAME_OBJECT_TYPE 3
 #define REX_GAME_MAX_OBJECT_AMOUNT (REX_GAME_MAX_OBSTACLE_AMOUNT + REX_GAME_MAX_DECORATION_AMOUNT + 1) /* 1 is preserved for trex */
 
 #define REX_GAME_TREX_X_POSITION 100
