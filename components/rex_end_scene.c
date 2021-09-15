@@ -23,13 +23,13 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
     /* detect event first */
     /* detect space event */
     int space_status = rex_get_space_status();
-    if (rex_event_lock == nk_false)
+    if (rex_scene_lock == nk_false)
     {
         switch (space_status)
         {
         case REX_KEY_HOLD:
         case REX_KEY_PRESS:
-            rex_event_lock = nk_true;
+            rex_scene_lock = nk_true;
 
             break;
         case REX_KEY_RELEASE:
@@ -55,12 +55,12 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
     }
     nk_end(ctx);
 
-    if (rex_event_lock == nk_true)
+    if (rex_scene_lock == nk_true)
     {
         /* do something here before scene changes */
 
         /* event lock free */
-        rex_event_lock = nk_false;
+        rex_scene_lock = nk_false;
         event = REX_BEGIN_SCENE_SPACE_PRESSED;
     }
 

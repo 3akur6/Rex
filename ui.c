@@ -31,13 +31,6 @@ void ui_init(struct nk_context *ctx)
         nk_style_set_font(ctx, &rex_fonts[0].font->handle);
     }
 
-    /* init rex_obstackles */
-    {
-        for (unsigned int i = 0; i < REX_GAME_MAX_OBSTACKLE_AMOUNT; i++)
-            /* default status set to inactive */
-            rex_obstackles[i].active = nk_false;
-    }
-
     return;
 }
 
@@ -59,6 +52,7 @@ void ui_run(struct nk_context *ctx, float width, float height)
     case REX_MAIN_SCENE:
         switch (rex_main_scene(ctx, width, height))
         {
+        case REX_MAIN_SCENE_SPACE_PRESSED:
         default:
             goto REX_GOTO_NOTHING_HAPPEN;
         }
