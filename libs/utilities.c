@@ -346,11 +346,20 @@ void rex_game_generate_random_obstackle(void)
     {
         /* regenerate seed */
         srand((unsigned int)time(NULL));
-        /* random offset in y axis of pterodactyl */
-        int offset = rand() % (REX_GAME_PTERODACTYL_MAX_HEIGHT - REX_GAME_PTERODACTYL_MIN_HEIGHT) + REX_GAME_PTERODACTYL_MIN_HEIGHT;
-
-        obstackle.y = REX_GAME_HORIZON_Y_POSITION - offset;
-        break;
+        /* random level to differentiate the y axis of pterodacty1 */
+        int level = rand() % 3;
+        switch (level)
+        {
+        case 0:
+            obstackle.y = REX_GAME_PTERODACTYL_Y_POSITION_1;
+            break;
+        case 1:
+            obstackle.y = REX_GAME_PTERODACTYL_Y_POSITION_2;
+            break;
+        case 2:
+            obstackle.y = REX_GAME_PTERODACTYL_Y_POSITION_3;
+            break;
+        }
     }
     case REX_GAME_OBSTACKLE_CACTUS_SMALL_0:
     case REX_GAME_OBSTACKLE_CACTUS_SMALL_1:
