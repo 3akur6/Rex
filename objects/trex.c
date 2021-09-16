@@ -55,7 +55,7 @@ void rex_object_trex_jump(struct nk_context *ctx, struct rex_game_object *trex)
     int need_frames_amount = 2 * need_frames_amount_one_way;
     float rex_jump_initial_velocity = REX_GAME_GRAVITY * need_frames_amount_one_way;
 
-    if (trex->detail.trex == REX_GAME_TREX_JUMP)
+    if (trex->detail.trex == REX_GAME_TREX_JUMP && trex->destroy_at_frame >= rex_frame)
     { /* jump */
         int destroy = trex->destroy_at_frame;
         int create = trex->create_at_frame;

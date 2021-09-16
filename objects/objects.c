@@ -19,13 +19,10 @@ void rex_debug_print_rex_objects(void)
         char type_str[50] = "";
         char detail_str[50] = "";
 
-        if (object.active == nk_true)
-            strcpy(active_str, "active");
-        else
-            strcpy(active_str, "inactive");
-
         switch (object.type)
         {
+        case 0:
+            break;
         case REX_GAME_OBJECT_TREX:
             strcpy(type_str, "REX_GAME_OBJECT_TREX");
             switch (object.detail.trex)
@@ -81,6 +78,12 @@ void rex_debug_print_rex_objects(void)
             }
             break;
         }
+
+        if (object.active == nk_true)
+            strcpy(active_str, "active");
+        else
+            strcpy(active_str, "inactive");
+
         printf(
             "\t%u(%s): type->%s, detail->%s, (x,y)->(%.1f,%.1f), width->%d, height->%d, create_at_frame->%d, destroy_at_frame->%d\n",
             i,

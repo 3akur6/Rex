@@ -63,6 +63,8 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
 
         rex_debug_print_rex_objects();
 
+        rex_draw_number(ctx, rex_frame, 5, 0, 0);
+
         rex_game_draw_objects(ctx);
         // rex_object_trex_jump(ctx, trex);
         /* draw instant score */
