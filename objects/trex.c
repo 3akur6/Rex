@@ -1,3 +1,4 @@
+/* won't change status if trex object in queue */
 void rex_game_init_trex(void)
 {
     /* place trex object in array[0] */
@@ -21,7 +22,18 @@ void rex_game_init_trex(void)
 
     trex->x = REX_GAME_TREX_X_POSITION;
     trex->y = REX_GAME_TREX_Y_POSITION;
-    trex->detail.trex = REX_GAME_TREX_WALK; /* default value is set to walk */
+
+    trex->detail.trex = REX_GAME_TREX_STATIC; /* default value */
+}
+
+struct rex_game_object *rex_object_get_trex(void)
+{
+    return &rex_objects[0];
+}
+
+void rex_game_set_trex_status(enum rex_game_trex_type trex_status)
+{
+    rex_objects[0].detail.trex = trex_status;
 }
 
 void rex_object_trex_walk(struct nk_context *ctx, struct rex_game_object *trex)
@@ -124,6 +136,9 @@ void rex_game_draw_trex(struct nk_context *ctx, struct rex_game_object *trex)
 
     switch (trex->detail.trex)
     {
+    case REX_GAME_TREX_STATIC:
+        rex_draw_image(ctx, IMAGE_TREX_2_ID, trex->x, trex->y);
+        break;
     case REX_GAME_TREX_JUMP:
         rex_object_trex_jump(ctx, trex);
         break;
