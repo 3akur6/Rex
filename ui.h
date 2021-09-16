@@ -50,7 +50,7 @@
 
 /* trex */
 #define REX_GAME_TREX_X_POSITION 100
-#define REX_GAME_TREX_Y_POSITION 472
+#define REX_GAME_TREX_Y_POSITION 496
 
 /* horizon */
 #define REX_GAME_HORIZON_X_POSITION 0
