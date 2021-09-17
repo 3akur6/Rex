@@ -55,62 +55,77 @@ void rex_object_trex_jump(struct nk_context *ctx, struct rex_game_object *trex)
     int need_frames_amount = 2 * need_frames_amount_one_way;
     float rex_jump_initial_velocity = REX_GAME_GRAVITY * need_frames_amount_one_way;
 
-    if (trex->detail.trex == REX_GAME_TREX_JUMP && trex->destroy_at_frame >= rex_frame)
+    int destroy = trex->destroy_at_frame;
+    int create = trex->create_at_frame;
+
+    float delta_frame;
+    int frame_over_one_way;
+    float y_upthrow_offset;
+    float y_drop_offset;
+
+    float offset_y;
+
+    if (trex->detail.trex == REX_GAME_TREX_JUMP && (rex_frame <= destroy && rex_frame >= create) && create < destroy)
     { /* jump */
-        int destroy = trex->destroy_at_frame;
-        int create = trex->create_at_frame;
-        float delta_frame = rex_frame - create;
-        int frame_over_one_way = delta_frame - need_frames_amount_one_way;
+        /* |-----|create|--------|mid|------|destroy|---| */
+        delta_frame = rex_frame - create;
+        frame_over_one_way = delta_frame - need_frames_amount_one_way;
+        y_upthrow_offset = rex_jump_initial_velocity * delta_frame - (REX_GAME_GRAVITY * delta_frame * delta_frame) / 2;
+        y_drop_offset = REX_GAME_JUMP_HEIGHT - REX_GAME_GRAVITY * frame_over_one_way * frame_over_one_way / 2;
 
-        float y_upthrow_offset = rex_jump_initial_velocity * delta_frame - (REX_GAME_GRAVITY * delta_frame * delta_frame) / 2;
-        float y_drop_offset = REX_GAME_JUMP_HEIGHT - REX_GAME_GRAVITY * frame_over_one_way * frame_over_one_way / 2;
+        int mid = (create + destroy) / 2;
+        if (rex_frame > create && rex_frame <= mid)
+            offset_y = y_upthrow_offset;
+        else if (rex_frame < destroy && rex_frame > mid)
+            offset_y = y_drop_offset;
+        else if (rex_frame == destroy)
+        {                          /* finish jumping */
+            trex->detail.trex = 0; /* set to meaningless status */
+            rex_draw_image(ctx, IMAGE_TREX_2_ID, trex->x, trex->y);
+            return;
+        }
+        trex->y = REX_GAME_TREX_Y_POSITION - offset_y;
+        rex_draw_image(ctx, IMAGE_TREX_2_ID, trex->x, trex->y);
+    }
+    else if (trex->detail.trex == REX_GAME_TREX_JUMP && (rex_frame <= destroy || rex_frame >= create) && create > destroy)
+    { /* jump */
+        /* |------|destroy|-------|create|-------*/
+        if (rex_frame >= create)
+            delta_frame = rex_frame - create;
+        else
+            delta_frame = MAX_FRAME_AMOUNT - create + rex_frame;
 
-        float offset_y;
+        frame_over_one_way = delta_frame - need_frames_amount_one_way;
+        y_upthrow_offset = rex_jump_initial_velocity * delta_frame - (REX_GAME_GRAVITY * delta_frame * delta_frame) / 2;
+        y_drop_offset = REX_GAME_JUMP_HEIGHT - REX_GAME_GRAVITY * frame_over_one_way * frame_over_one_way / 2;
 
-        if (create < destroy)
-        { /* |-----|create|--------|mid|------|destroy|---| */
-            int mid = (create + destroy) / 2;
-            if (rex_frame > create && rex_frame <= mid)
+        int half = (MAX_FRAME_AMOUNT - create + destroy) / 2;
+        if (half < MAX_FRAME_AMOUNT - create)
+        { /* |-----|destroy|---------|create|-----|mid|---| */
+            int mid = half + create;
+            if (rex_frame >= create && rex_frame <= mid)
                 offset_y = y_upthrow_offset;
-            else if (rex_frame < destroy && rex_frame > mid)
+            else if (rex_frame > mid || rex_frame < destroy)
                 offset_y = y_drop_offset;
             else if (rex_frame == destroy)
-            {                          /* finish jumping */
+            {
                 trex->detail.trex = 0; /* set to meaningless status */
                 rex_draw_image(ctx, IMAGE_TREX_2_ID, trex->x, trex->y);
                 return;
             }
         }
         else
-        { /* destroy < create */
-            int half = (MAX_FRAME_AMOUNT - create + destroy) / 2;
-            if (half < MAX_FRAME_AMOUNT - create)
-            { /* |-----|destroy|---------|create|-----|mid|---| */
-                int mid = half + create;
-                if (rex_frame >= create && rex_frame <= mid)
-                    offset_y = y_upthrow_offset;
-                else if (rex_frame > mid || rex_frame < destroy)
-                    offset_y = y_drop_offset;
-                else if (rex_frame == destroy)
-                {
-                    trex->detail.trex = 0; /* set to meaningless status */
-                    rex_draw_image(ctx, IMAGE_TREX_2_ID, trex->x, trex->y);
-                    return;
-                }
-            }
-            else
-            { /* |--|mid|------|destroy|---------|create|----| */
-                int mid = destroy - half;
-                if (rex_frame >= create || rex_frame <= mid)
-                    offset_y = y_upthrow_offset;
-                else if (rex_frame > mid && rex_frame < destroy)
-                    offset_y = y_drop_offset;
-                else if (rex_frame == destroy)
-                {
-                    trex->detail.trex = 0; /* set to meaningless status */
-                    rex_draw_image(ctx, IMAGE_TREX_2_ID, trex->x, trex->y);
-                    return;
-                }
+        { /* |--|mid|------|destroy|---------|create|----| */
+            int mid = destroy - half;
+            if (rex_frame >= create || rex_frame <= mid)
+                offset_y = y_upthrow_offset;
+            else if (rex_frame > mid && rex_frame < destroy)
+                offset_y = y_drop_offset;
+            else if (rex_frame == destroy)
+            {
+                trex->detail.trex = 0; /* set to meaningless status */
+                rex_draw_image(ctx, IMAGE_TREX_2_ID, trex->x, trex->y);
+                return;
             }
         }
         trex->y = REX_GAME_TREX_Y_POSITION - offset_y;
@@ -121,11 +136,10 @@ void rex_object_trex_jump(struct nk_context *ctx, struct rex_game_object *trex)
         trex->detail.trex = REX_GAME_TREX_JUMP;
         trex->x = REX_GAME_TREX_X_POSITION;
         trex->y = REX_GAME_TREX_Y_POSITION;
-        trex->create_at_frame = rex_frame + 1;                               /* create jump next frame */
-        trex->destroy_at_frame = trex->create_at_frame + need_frames_amount; /* set destroy frame */
+        trex->create_at_frame = (rex_frame + 1) % MAX_FRAME_AMOUNT;                               /* create jump next frame */
+        trex->destroy_at_frame = (trex->create_at_frame + need_frames_amount) % MAX_FRAME_AMOUNT; /* set destroy frame */
 
         rex_draw_image(ctx, IMAGE_TREX_2_ID, trex->x, trex->y);
-        // printf("[rex_object_trex_jump] reset trex\n");
     }
 }
 

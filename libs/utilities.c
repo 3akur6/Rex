@@ -178,15 +178,6 @@ void rex_draw_number(struct nk_context *ctx, unsigned int number, unsigned char 
     }
 }
 
-/* when refresh cycle reset, rex_refresh_lock is free */
-nk_bool rex_refresh_lock_is_free(void)
-{
-    if (rex_refresh_cycle % REFRESH_CYCLES == 0)
-        return nk_true;
-
-    return nk_false;
-}
-
 /* introduce frames to draw dynamic image 
 update refresh cycle and frame here
 */
@@ -204,55 +195,6 @@ void rex_end_frames(void)
 {
     rex_refresh_cycle = 0;
     rex_frame = 0;
-}
-
-void rex_ymove_image_from_to_gradually(struct nk_context *ctx, unsigned char image_id, float x, float from_y, float to_y, float step_y)
-{
-    float offset = from_y - to_y;
-    int need_frames_amount = offset / step_y;
-
-    /* increase rex_frame from 0 to REX_JUMP_HEIGHT then reset */
-    if (rex_frame > need_frames_amount)
-        rex_frame = 0;
-
-    rex_draw_image(ctx, image_id, x, from_y - step_y * rex_frame);
-}
-
-// nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, float y)
-// {
-//     int need_frames_amount = (2 * REX_GAME_JUMP_HEIGHT) / REX_GAME_JUMP_STEP;
-//     if (rex_frame > need_frames_amount)
-//     {
-//         rex_draw_image(ctx, image_id, x, y);
-//         return nk_true;
-//     }
-
-//     if (rex_frame < (need_frames_amount / 2))
-//         rex_draw_image(ctx, image_id, x, y - rex_frame * REX_GAME_JUMP_STEP);
-//     else
-//         rex_draw_image(ctx, image_id, x, y - REX_GAME_JUMP_HEIGHT + (rex_frame - need_frames_amount / 2) * REX_GAME_JUMP_STEP);
-
-//     return nk_false;
-// }
-
-nk_bool rex_trex_jump(struct nk_context *ctx, unsigned char image_id, float x, float y)
-{
-    int need_frames_amount_one_way = (int)sqrt((2 * REX_GAME_JUMP_HEIGHT) / REX_GAME_GRAVITY);
-    int need_frames_amount = 2 * need_frames_amount_one_way;
-    float rex_jump_initial_velocity = REX_GAME_GRAVITY * need_frames_amount_one_way;
-    //float rex_jump_initial_velocity = (REX_GAME_JUMP_HEIGHT + (REX_GAME_GRAVITY * need_frames_amount_one_way * need_frames_amount_one_way) / 2) / need_frames_amount_one_way;
-    if (rex_frame > need_frames_amount)
-    { /* draw static image */
-        rex_draw_image(ctx, image_id, x, y);
-        return nk_true;
-    }
-
-    if (rex_frame < need_frames_amount_one_way)
-        rex_draw_image(ctx, image_id, x, y - (rex_jump_initial_velocity * rex_frame - (REX_GAME_GRAVITY * rex_frame * rex_frame) / 2));
-    else
-        rex_draw_image(ctx, image_id, x, y - REX_GAME_JUMP_HEIGHT + (REX_GAME_GRAVITY * (rex_frame - need_frames_amount_one_way) * (rex_frame - need_frames_amount_one_way)) / 2);
-
-    return nk_false;
 }
 
 #include "../objects/objects.h"
