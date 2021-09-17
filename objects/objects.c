@@ -12,7 +12,8 @@ static struct rex_game_object rex_objects[REX_GAME_MAX_OBJECT_AMOUNT];
 void rex_debug_print_rex_objects(void)
 {
     printf("[rex_debug_print_rex_objects (%d) (%d)]\n", rex_object_amount, rex_frame);
-    for (unsigned int i = 0; i < rex_object_amount; i++)
+
+    for (unsigned int i = 0; i < REX_GAME_MAX_OBJECT_AMOUNT; i++)
     {
         struct rex_game_object object = rex_objects[i];
         char active_str[10] = "";
@@ -22,7 +23,7 @@ void rex_debug_print_rex_objects(void)
         switch (object.type)
         {
         case 0:
-            break;
+            continue;
         case REX_GAME_OBJECT_TREX:
             strcpy(type_str, "REX_GAME_OBJECT_TREX");
             switch (object.detail.trex)
