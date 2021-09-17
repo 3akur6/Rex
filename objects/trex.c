@@ -38,13 +38,14 @@ void rex_game_set_trex_status(enum rex_game_trex_type trex_status)
 
 void rex_object_trex_walk(struct nk_context *ctx, struct rex_game_object *trex)
 {
-    float x = trex->x;
-    float y = trex->y;
+    /* reset (x,y) */
+    trex->x = REX_GAME_TREX_X_POSITION;
+    trex->y = REX_GAME_TREX_Y_POSITION;
 
     if (rex_frame & REX_GAME_TREX_WALK_SPEED)
-        rex_draw_image(ctx, IMAGE_TREX_4_ID, x, y);
+        rex_draw_image(ctx, IMAGE_TREX_4_ID, trex->x, trex->y);
     else
-        rex_draw_image(ctx, IMAGE_TREX_5_ID, x, y);
+        rex_draw_image(ctx, IMAGE_TREX_5_ID, trex->x, trex->y);
 
     return;
 }
