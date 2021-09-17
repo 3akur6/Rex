@@ -31,6 +31,11 @@ void ui_init(struct nk_context *ctx)
         nk_style_set_font(ctx, &rex_fonts[0].font->handle);
     }
 
+    { /* calc jump distance array */
+        need_frames_amount_one_way = (int)sqrt((2 * REX_GAME_JUMP_HEIGHT) / REX_GAME_GRAVITY);
+        rex_game_trex_generate_jump_distance_array();
+    }
+
     return;
 }
 
