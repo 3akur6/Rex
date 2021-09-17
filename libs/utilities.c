@@ -197,5 +197,12 @@ void rex_end_frames(void)
     rex_frame = 0;
 }
 
+/* control the speed of score updating */
+void rex_game_score_update(void)
+{
+    if (rex_current_score < REX_GAME_MAX_SCORE && !(rex_frame % REX_GAME_SCORE_INCREASE_COEFFICIENT))
+        rex_current_score++;
+}
+
 #include "../objects/objects.h"
 #include "../objects/objects.c"

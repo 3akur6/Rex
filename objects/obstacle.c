@@ -149,149 +149,29 @@ void rex_game_draw_obstacle(struct nk_context *ctx, struct rex_game_object *obst
     }
 }
 
-// void rex_game_draw_obstacles(struct nk_context *ctx)
-// {
-//     /* count the number of active obstacles then update rex_obstacle_amount */
-//     unsigned int obstacle_active_amount = 0;
+struct rex_game_object *rex_game_get_closest_obstacle(void)
+{
+    struct rex_game_object *need_object; /* result */
+    struct rex_game_object *object;
+    unsigned int min = 0; /* default */
 
-//     struct rex_game_object *obstacle;
-//     for (unsigned int i = 0; i < REX_GAME_MAX_OBSTACLE_AMOUNT; i++)
-//     {
-//         rex_game_get_obstacle(&obstacle);
-//         printf("[0: draw] current amount of obstacles: %d\n", rex_obstacle_amount);
+    struct rex_game_object *trex = &rex_objects[0]; /* get trex object */
+    float trex_x_right = trex->x + trex->width;
 
-//         if (obstacle->active == nk_true)
-//         { /* get an active obstacle */
-//             obstacle_active_amount++;
-//             float current_x = obstacle->x;
-//             float current_y = obstacle->y;
+    for (unsigned char i = 1; i < REX_GAME_MAX_OBJECT_AMOUNT; i++)
+    {
+        object = &rex_objects[i];
+        float object_x = object->x;
+        if (object->active == nk_true && object->type == REX_GAME_OBJECT_OBSTACLE && trex_x_right < object_x)
+        {
+            float delta_x = object_x - trex_x_right;
+            if (delta_x < min || min == 0)
+            {
+                need_object = object; /* need_object points to current obstacle */
+                min = delta_x;
+            }
+        }
+    }
 
-//             struct rex_image image;
-//             switch (obstacle->type)
-//             {
-//             case REX_GAME_obstacle_PTERODACTYL:
-//             {
-//                 /* will get image from cached list */
-//                 image = rex_image_load(IMAGE_PTERODACTYL_0_ID);
-//                 /* update obstacle width and height */
-//                 obstacle->width = image.width;
-//                 obstacle->height = image.height;
-
-//                 float current_x_right = current_x + obstacle->width;
-//                 if (current_x_right < 0)
-//                     /* object move out of scene */
-//                     obstacle->active = nk_false;
-//                 else if (rex_frame >= obstacle->create_at_frame)
-//                 {
-//                     /* draw obstacle. Update (x, y) will be done out of switch for all obstacles */
-//                     rex_pterodactyl_fly(ctx, current_x, current_y);
-//                     printf("[draw] pterodactyl at (%f, %f)\n", current_x, current_y);
-//                 }
-
-//                 break;
-//             }
-//             case REX_GAME_obstacle_CACTUS_SMALL_0:
-//             {
-//                 image = rex_image_load(IMAGE_CACTUS_SMALL_0_ID);
-//                 obstacle->width = image.width;
-//                 obstacle->height = image.height;
-
-//                 float current_x_right = current_x + obstacle->width;
-//                 if (current_x_right < 0)
-//                     obstacle->active = nk_false;
-//                 else
-//                 {
-//                     rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_0_ID, obstacle->create_at_frame, current_x, current_y);
-//                     printf("[draw] cactus_small_0 at (%f, %f)\n", current_x, current_y);
-//                 }
-//                 break;
-//             }
-//             case REX_GAME_OBSTACLE_CACTUS_SMALL_1:
-//             {
-//                 image = rex_image_load(IMAGE_CACTUS_SMALL_1_ID);
-//                 obstacle->width = image.width;
-//                 obstacle->height = image.height;
-
-//                 float current_x_right = current_x + obstacle->width;
-//                 if (current_x_right < 0)
-//                     obstacle->active = nk_false;
-//                 else
-//                 {
-//                     rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_1_ID, obstacle->create_at_frame, current_x, current_y);
-//                     printf("[draw] cactus_small_1 at (%f, %f)\n", current_x, current_y);
-//                 }
-//                 break;
-//             }
-//             case REX_GAME_OBSTACLE_CACTUS_SMALL_2:
-//             {
-//                 image = rex_image_load(IMAGE_CACTUS_SMALL_2_ID);
-//                 obstacle->width = image.width;
-//                 obstacle->height = image.height;
-
-//                 float current_x_right = current_x + obstacle->width;
-//                 if (current_x_right < 0)
-//                     obstacle->active = nk_false;
-//                 else
-//                 {
-//                     rex_draw_image_since_frame(ctx, IMAGE_CACTUS_SMALL_2_ID, obstacle->create_at_frame, current_x, current_y);
-//                     printf("[draw] cactus_small_2 at (%f, %f)\n", current_x, current_y);
-//                 }
-//                 break;
-//             }
-//             case REX_GAME_OBSTACLE_CACTUS_LARGE_0:
-//             {
-//                 image = rex_image_load(IMAGE_CACTUS_LARGE_0_ID);
-//                 obstacle->width = image.width;
-//                 obstacle->height = image.height;
-
-//                 float current_x_right = current_x + obstacle->width;
-//                 if (current_x_right < 0)
-//                     obstacle->active = nk_false;
-//                 else
-//                 {
-//                     rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_0_ID, obstacle->create_at_frame, current_x, current_y);
-//                     printf("[draw] cactus_large_0 at (%f, %f)\n", current_x, current_y);
-//                 }
-//                 break;
-//             }
-//             case REX_GAME_OBSTACLE_CACTUS_LARGE_1:
-//             {
-//                 image = rex_image_load(IMAGE_CACTUS_LARGE_1_ID);
-//                 obstacle->width = image.width;
-//                 obstacle->height = image.height;
-
-//                 float current_x_right = current_x + obstacle->width;
-//                 if (current_x_right < 0)
-//                     obstacle->active = nk_false;
-//                 else
-//                 {
-//                     rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_1_ID, obstacle->create_at_frame, current_x, current_y);
-//                     printf("[draw] cactus_large_1 at (%f, %f)\n", current_x, current_y);
-//                 }
-//                 break;
-//             }
-//             case REX_GAME_OBSTACLE_CACTUS_LARGE_2:
-//             {
-//                 image = rex_image_load(IMAGE_CACTUS_LARGE_2_ID);
-//                 obstacle->width = image.width;
-//                 obstacle->height = image.height;
-
-//                 float current_x_right = current_x + obstacle->width;
-//                 if (current_x_right < 0)
-//                     obstacle->active = nk_false;
-//                 else
-//                 {
-//                     rex_draw_image_since_frame(ctx, IMAGE_CACTUS_LARGE_2_ID, obstacle->create_at_frame, current_x, current_y);
-//                     printf("[draw] cactus_large_2 at (%f, %f)\n", current_x, current_y);
-//                 }
-//                 break;
-//             }
-//             }
-//             /* update (x, y) here */
-//             obstacle->x -= rex_game_speed;
-//         }
-//     }
-
-//     /* update rex_obstacle_amount */
-//     rex_obstacle_amount = obstacle_active_amount;
-// }
+    return need_object;
+}

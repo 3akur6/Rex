@@ -1,3 +1,5 @@
+#include "../libs/collision.c"
+
 enum rex_main_scene_event
 {
     REX_MAIN_SCENE_NOTHING_HAPPEN,
@@ -48,12 +50,15 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
 
         rex_debug_print_rex_objects();
 
-        rex_draw_number(ctx, rex_frame, 5, 2, 0);
-
         rex_game_draw_objects(ctx);
         // rex_object_trex_jump(ctx, trex);
         /* draw instant score */
-        rex_draw_number(ctx, 666, REX_GAME_SCORE_DIGIT_WIDTH, MAIN_SCENE_CURRENT_SCORE_X, MAIN_SCENE_CURRENT_SCORE_Y);
+        rex_draw_number(ctx, rex_current_score, REX_GAME_SCORE_DIGIT_WIDTH, MAIN_SCENE_CURRENT_SCORE_X, MAIN_SCENE_CURRENT_SCORE_Y);
+        /* score increases */
+        rex_game_score_update();
+
+        if (rex_game_collision_detect() == nk_true)
+            rex_draw_number(ctx, 666, 3, 5, 2);
 
         rex_horizon_line_roll(ctx, MAIN_SCENE_HORIZON_X, MAIN_SCENE_HORIZON_Y);
     }
