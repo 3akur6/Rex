@@ -48,8 +48,6 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
         /* try to generate a random obstacle in rex_objects */
         rex_game_generate_random_object();
 
-        rex_debug_print_rex_objects();
-
         rex_game_draw_objects(ctx);
         // rex_object_trex_jump(ctx, trex);
         /* draw instant score */

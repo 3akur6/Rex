@@ -66,7 +66,6 @@ enum rex_begin_scene_event rex_begin_scene(struct nk_context *ctx, float window_
         rex_begin_frames();
 
         struct rex_game_object *trex = rex_object_get_trex();
-        rex_debug_print_rex_objects();
 
         printf("[rex_begin_scene (%d)] %d\n", rex_frame, trex->detail.trex);
 
