@@ -8,9 +8,9 @@ struct collision_box
     unsigned int height;
 };
 
-void collision_debug_print_collision_box(struct collision_box *box)
+void collision_debug_print_collision_box(struct collision_box *box, char *msg)
 {
-    printf("[collision_debug_print_collision_box] ");
+    printf("[collision_debug_print_collision_box (%s) (%d)] ", msg, rex_current_score);
     printf("(x,y)->(%f,%f), width->%u, height->%u\n", box->x, box->y, box->width, box->height);
 }
 
@@ -26,14 +26,9 @@ nk_bool collision_detect(struct collision_box *box1, struct collision_box *box2)
     unsigned int box2_y = box2->y;
     unsigned int box2_y_bottom = box2->y + box2->height;
 
-    collision_debug_print_collision_box(box1);
-    collision_debug_print_collision_box(box2);
-
     if (box1_x_right < box2_x || box1_x > box2_x_right || box1_y_bottom < box2_y || box1_y > box2_y_bottom)
         /* no collision */
         return nk_false;
-
-    printf("collide\n");
 
     return nk_true;
 }

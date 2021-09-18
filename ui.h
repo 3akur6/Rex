@@ -20,6 +20,7 @@
 #define REX_GAME_JUMP_HEIGHT 200
 #define REX_GAME_JUMP_STEP 2
 #define REX_GAME_TREX_WALK_SPEED 0x8
+#define REX_GAME_TREX_DUCK_SPEED REX_GAME_TREX_WALK_SPEED
 #define REX_GAME_PTERODACTYL_REFRESH_SPEED 0x8
 
 /* pterodactyl fly height (base on horizon line) */
@@ -182,44 +183,58 @@
 #define IMAGE_TREX_7_WIDTH 80
 #define IMAGE_TREX_7_HEIGHT 86
 
+/* trex 8 */
+/* x: 2203, y: 36 */
+#define IMAGE_TREX_8_ID 13
+#define IMAGE_TREX_8_PATH "assets/trex_8.png"
+#define IMAGE_TREX_8_WIDTH 118
+#define IMAGE_TREX_8_HEIGHT 60
+
+/* trex 9 */
+/* x: 2321, y: 36 */
+#define IMAGE_TREX_9_ID 14
+#define IMAGE_TREX_9_PATH "assets/trex_9.png"
+#define IMAGE_TREX_9_WIDTH 118
+#define IMAGE_TREX_9_HEIGHT 60
+
 /* cactus small 0 */
 /* x: 446, y: 2 */
-#define IMAGE_CACTUS_SMALL_0_ID 13
+#define IMAGE_CACTUS_SMALL_0_ID 15
 #define IMAGE_CACTUS_SMALL_0_PATH "assets/cactus_small_0.png"
 #define IMAGE_CACTUS_SMALL_0_WIDTH 34
 #define IMAGE_CACTUS_SMALL_0_HEIGHT 70
 
 /* cactus small 1 */
 /* x: 480, y: 2 */
-#define IMAGE_CACTUS_SMALL_1_ID 14
+#define IMAGE_CACTUS_SMALL_1_ID 16
 #define IMAGE_CACTUS_SMALL_1_PATH "assets/cactus_small_1.png"
 #define IMAGE_CACTUS_SMALL_1_WIDTH 68
 #define IMAGE_CACTUS_SMALL_1_HEIGHT 70
 
 /* cactus small 2 */
 /* x: 548, y: 2 */
-#define IMAGE_CACTUS_SMALL_2_ID 15
+#define IMAGE_CACTUS_SMALL_2_ID 17
 #define IMAGE_CACTUS_SMALL_2_PATH "assets/cactus_small_2.png"
 #define IMAGE_CACTUS_SMALL_2_WIDTH 102
 #define IMAGE_CACTUS_SMALL_2_HEIGHT 70
 
 /* cactus large 0 */
 /* x: 652, y: 2 */
-#define IMAGE_CACTUS_LARGE_0_ID 16
+#define IMAGE_CACTUS_LARGE_0_ID 18
 #define IMAGE_CACTUS_LARGE_0_PATH "assets/cactus_large_0.png"
 #define IMAGE_CACTUS_LARGE_0_WIDTH 50
 #define IMAGE_CACTUS_LARGE_0_HEIGHT 100
 
 /* cactus large 1 */
 /* x: 702, y: 2 */
-#define IMAGE_CACTUS_LARGE_1_ID 17
+#define IMAGE_CACTUS_LARGE_1_ID 19
 #define IMAGE_CACTUS_LARGE_1_PATH "assets/cactus_large_1.png"
 #define IMAGE_CACTUS_LARGE_1_WIDTH 100
 #define IMAGE_CACTUS_LARGE_1_HEIGHT 100
 
 /* cactus large 2 */
 /* x: 802, y: 2 */
-#define IMAGE_CACTUS_LARGE_2_ID 18
+#define IMAGE_CACTUS_LARGE_2_ID 20
 #define IMAGE_CACTUS_LARGE_2_PATH "assets/cactus_large_2.png"
 #define IMAGE_CACTUS_LARGE_2_WIDTH 150
 #define IMAGE_CACTUS_LARGE_2_HEIGHT 100
@@ -253,6 +268,8 @@
 #define MAIN_SCENE_TREX_Y REX_GAME_TREX_Y_POSITION
 #define MAIN_SCENE_HORIZON_X REX_GAME_HORIZON_X_POSITION
 #define MAIN_SCENE_HORIZON_Y REX_GAME_HORIZON_Y_POSITION
+#define MAIN_SCENE_HI_SCORE_X REX_GAME_HI_SCORE_X_POSITION
+#define MAIN_SCENE_HI_SCORE_Y REX_GAME_HI_SCORE_Y_POSITION
 #define MAIN_SCENE_CURRENT_SCORE_X REX_GAME_CURRENT_SCORE_X_POSITION
 #define MAIN_SCENE_CURRENT_SCORE_Y REX_GAME_CURRENT_SCORE_Y_POSITION
 
@@ -278,7 +295,7 @@ static unsigned int rex_frame = 0;          /* frames */
 static nk_bool rex_scene_lock = nk_false;   /* not switch scene when lock */
 
 static unsigned char rex_game_speed = REX_GAME_SPEED;
-static unsigned int rex_hi_score = 99999;
+static unsigned int rex_hi_score = 0;
 static unsigned int rex_current_score = 0;
 static unsigned int rex_horizon_line_offset = 0;
 
@@ -296,6 +313,8 @@ static const char rex_image_path_list[MAX_IMAGES_AMOUNT][MAX_PATH_LENGTH] = {
     IMAGE_TREX_5_PATH,
     IMAGE_TREX_6_PATH,
     IMAGE_TREX_7_PATH,
+    IMAGE_TREX_8_PATH,
+    IMAGE_TREX_9_PATH,
     IMAGE_CACTUS_SMALL_0_PATH,
     IMAGE_CACTUS_SMALL_1_PATH,
     IMAGE_CACTUS_SMALL_2_PATH,

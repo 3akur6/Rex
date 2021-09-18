@@ -67,8 +67,6 @@ enum rex_begin_scene_event rex_begin_scene(struct nk_context *ctx, float window_
 
         struct rex_game_object *trex = rex_object_get_trex();
 
-        printf("[rex_begin_scene (%d)] %d\n", rex_frame, trex->detail.trex);
-
         if (trex->detail.trex != REX_GAME_TREX_JUMP)
         { /* trex finishes jumping */
             rex_scene_lock = nk_false;

@@ -153,16 +153,18 @@ struct rex_game_object *rex_game_get_closest_obstacle(void)
 {
     struct rex_game_object *need_object; /* result */
     struct rex_game_object *object;
-    unsigned int min = 0; /* default */
+    float min = 0; /* default */
 
     struct rex_game_object *trex = &rex_objects[0]; /* get trex object */
+    float trex_x = trex->x;
     float trex_x_right = trex->x + trex->width;
 
     for (unsigned char i = 1; i < REX_GAME_MAX_OBJECT_AMOUNT; i++)
     {
         object = &rex_objects[i];
         float object_x = object->x;
-        if (object->active == nk_true && object->type == REX_GAME_OBJECT_OBSTACLE && trex_x_right < object_x)
+        float object_x_right = object_x + object->width;
+        if (object->active == nk_true && object->type == REX_GAME_OBJECT_OBSTACLE && trex_x < object_x_right)
         {
             float delta_x = object_x - trex_x_right;
             if (delta_x < min || min == 0)

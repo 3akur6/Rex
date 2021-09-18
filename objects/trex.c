@@ -1,16 +1,9 @@
 #define MAX_DISTANCE_ARRAY_SIZE 100
 
-#include "../libs/debug.c"
-
 static float rex_game_trex_jump_distance_array[MAX_DISTANCE_ARRAY_SIZE];
 static int need_frames_amount_one_way;
 
-void rex_debug_print_jump_distance_array(void)
-{
-    printf("[rex_debug_print_jump_distance_array (%d) (%d)]\n", need_frames_amount_one_way, rex_frame);
-    for (unsigned int i = 0; i < need_frames_amount_one_way; i++)
-        printf("\t%u: %f\n", i, rex_game_trex_jump_distance_array[i]);
-}
+#include "../libs/debug.c"
 
 void rex_game_trex_generate_jump_distance_array()
 {
@@ -66,8 +59,17 @@ void rex_object_trex_walk(struct nk_context *ctx, struct rex_game_object *trex)
         rex_draw_image(ctx, IMAGE_TREX_4_ID, trex->x, trex->y);
     else
         rex_draw_image(ctx, IMAGE_TREX_5_ID, trex->x, trex->y);
+}
 
-    return;
+void rex_object_trex_duck(struct nk_context *ctx, struct rex_game_object *trex)
+{
+    trex->x = REX_GAME_TREX_X_POSITION;
+    trex->y = REX_GAME_TREX_Y_POSITION;
+
+    if (rex_frame & REX_GAME_TREX_DUCK_SPEED)
+        rex_draw_image(ctx, IMAGE_TREX_8_ID, trex->x, trex->y);
+    else
+        rex_draw_image(ctx, IMAGE_TREX_9_ID, trex->x, trex->y);
 }
 
 void rex_object_trex_jump(struct nk_context *ctx, struct rex_game_object *trex)
@@ -78,9 +80,6 @@ void rex_object_trex_jump(struct nk_context *ctx, struct rex_game_object *trex)
     int delta_frame;
 
     float offset_y;
-
-    rex_debug_print_rex_objects();
-    rex_debug_print_jump_distance_array();
 
     if (trex->detail.trex == REX_GAME_TREX_JUMP && (rex_frame <= destroy && rex_frame >= create) && create < destroy)
     { /* jump */
@@ -108,7 +107,10 @@ void rex_object_trex_jump(struct nk_context *ctx, struct rex_game_object *trex)
         else
             delta_frame = MAX_FRAME_AMOUNT - create + rex_frame;
 
-        offset_y = rex_game_trex_jump_distance_array[delta_frame];
+        if (delta_frame >= need_frames_amount_one_way)
+            offset_y = rex_game_trex_jump_distance_array[2 * need_frames_amount_one_way - delta_frame - 2];
+        else
+            offset_y = rex_game_trex_jump_distance_array[delta_frame];
 
         if (rex_frame == destroy)
         {
@@ -145,6 +147,7 @@ void rex_game_draw_trex(struct nk_context *ctx, struct rex_game_object *trex)
         rex_object_trex_jump(ctx, trex);
         break;
     case REX_GAME_TREX_DUCK:
+        rex_object_trex_duck(ctx, trex);
         break;
     case REX_GAME_TREX_WALK:
         rex_object_trex_walk(ctx, trex);

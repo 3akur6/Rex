@@ -86,10 +86,10 @@ void rex_debug_print_rex_object(struct rex_game_object *object)
 
 void rex_debug_print_rex_objects(void)
 {
-    printf("[rex_debug_print_rex_objects (%d) (%d)]\n", rex_object_amount, rex_frame);
+    printf("[rex_debug_print_rex_objects (%d) (%d) (%d)]\n", rex_object_amount, rex_frame, rex_current_score);
 
     for (unsigned int i = 0; i < REX_GAME_MAX_OBJECT_AMOUNT; i++)
-    {
+    { /*  */
         struct rex_game_object object = rex_objects[i];
         char active_str[10] = "";
         char type_str[50] = "";
@@ -170,4 +170,11 @@ void rex_debug_print_rex_objects(void)
             object.width, object.height,
             object.create_at_frame, object.destroy_at_frame);
     }
+}
+
+void rex_debug_print_jump_distance_array(void)
+{
+    printf("[rex_debug_print_jump_distance_array (%d) (%d)]\n", need_frames_amount_one_way, rex_frame);
+    for (unsigned int i = 0; i < need_frames_amount_one_way; i++)
+        printf("\t%u: %f\n", i, rex_game_trex_jump_distance_array[i]);
 }

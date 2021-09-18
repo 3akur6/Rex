@@ -72,6 +72,4 @@ void rex_game_draw_objects(struct nk_context *ctx)
     rex_object_amount = object_active_amount;
     rex_obstacle_amount = obstacle_active_amount;
     rex_decoration_amount = decoration_active_amount;
-
-    // rex_debug_print_rex_objects();
 }

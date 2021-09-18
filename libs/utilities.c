@@ -95,43 +95,6 @@ void rex_draw_subimage(struct nk_context *ctx, unsigned char image_id, float cut
     nk_draw_image(canvas, rect, &image.handle, nk_white);
 }
 
-enum rex_key_status
-{
-    REX_KEY_PRESS,      /* press then release */
-    REX_KEY_LONG_PRESS, /* long press */
-    REX_KEY_RELEASE,    /* not press */
-    REX_KEY_HOLD        /* keep pressing key for some time */
-};
-
-static unsigned int rex_space_press_since_release_times = 0; /* reset when space is released */
-
-enum rex_key_status rex_get_space_status(void)
-{ /* only check status when space is released */
-    /* check raw space press status */
-    unsigned int rex_space_press_since_release_times_saved = rex_space_press_since_release_times;
-
-    if (glfwGetKey(glfw.win, GLFW_KEY_SPACE) == GLFW_PRESS)
-        rex_space_press_since_release_times++;
-    else
-        rex_space_press_since_release_times = 0;
-
-    /* space released */
-    if (rex_space_press_since_release_times_saved == 0)
-        return REX_KEY_RELEASE;
-
-    /* still press */
-    else if (rex_space_press_since_release_times >= KEY_HOLD_THRESHOLD)
-        return REX_KEY_HOLD;
-
-    /* space pressed */
-    else if (rex_space_press_since_release_times_saved >= KEY_HOLD_THRESHOLD && rex_space_press_since_release_times == 0)
-        return REX_KEY_LONG_PRESS;
-
-    /* space hold */
-    else /* if (rex_space_press_since_release_times > KEY_HOLD_THRESHOLD) */
-        return REX_KEY_PRESS;
-}
-
 void rex_draw_digit(struct nk_context *ctx, unsigned char digit, float place_x, float place_y)
 {
     /* only draw digits from 0 to 9 */
@@ -150,6 +113,7 @@ void rex_draw_number(struct nk_context *ctx, unsigned int number, unsigned char 
             rex_draw_digit(ctx, number, place_x, place_y);
         return;
     }
+
     /* store digits from low to high */
     unsigned char digits[MAX_DIGITS_AMOUNT];
     unsigned char digits_amount = 0;
@@ -204,5 +168,6 @@ void rex_game_score_update(void)
         rex_current_score++;
 }
 
+#include "keyboard.c"
 #include "../objects/objects.h"
 #include "../objects/objects.c"

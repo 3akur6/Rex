@@ -61,7 +61,7 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
 
         /* event lock free */
         rex_scene_lock = nk_false;
-        event = REX_BEGIN_SCENE_SPACE_PRESSED;
+        event = REX_END_SCENE_SPACE_PRESSED;
     }
 
     return event;
