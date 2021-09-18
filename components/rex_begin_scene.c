@@ -36,23 +36,30 @@ enum rex_begin_scene_event rex_begin_scene(struct nk_context *ctx, float window_
     /* only init once */
     rex_game_init_trex();
 
-    int space_status = rex_get_space_status();
     if (rex_scene_lock == nk_false)
     {
         rex_game_set_trex_status(REX_GAME_TREX_STATIC);
         /* detect event */
         /* detect space event */
-        switch (space_status)
+        switch (rex_input_key.code)
         {
-        case REX_KEY_HOLD:
-        case REX_KEY_PRESS:
-            /* event lock */
-            rex_scene_lock = nk_true;
-            /* set trex status to jump */
-            rex_game_set_trex_status(REX_GAME_TREX_JUMP);
+        case REX_KEY_CODE_DOWN:
+            break;
+        case REX_KEY_CODE_SPACE:
+            switch (rex_input_key.status)
+            {
+            case REX_KEY_STATUS_REPEAT:
+            case REX_KEY_STATUS_PRESS:
+                /* event lock */
+                rex_scene_lock = nk_true;
+                /* set trex status to jump */
+                rex_game_set_trex_status(REX_GAME_TREX_JUMP);
+                break;
+            case REX_KEY_STATUS_RELEASE:
+                break;
+            }
 
             break;
-        case REX_KEY_RELEASE:
         default:
             event = REX_BEGIN_SCENE_NOTHING_HAPPEN;
         }

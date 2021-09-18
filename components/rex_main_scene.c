@@ -28,20 +28,37 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
     /* draw scene here */
     nk_begin(ctx, MAIN_SCENE_NAME, nk_rect(0, 0, window_width, window_height), NK_WINDOW_BACKGROUND);
 
-    { /* handle event here */
-        int space_status = rex_get_space_status();
-
-        /* detect event */
-        /* detect space event */
-        switch (space_status)
+    if (rex_scene_lock == nk_false)
+    { /* handle event */
+        switch (rex_input_key.code)
         {
-        case REX_KEY_HOLD:
-        case REX_KEY_PRESS:
-            /* event lock */
-            rex_game_set_trex_status(REX_GAME_TREX_JUMP);
+        case REX_KEY_CODE_DOWN:
+            switch (rex_input_key.status)
+            {
+            case REX_KEY_STATUS_REPEAT:
+            case REX_KEY_STATUS_PRESS:
+                /* set trex status to duck */
+                rex_game_set_trex_status(REX_GAME_TREX_DUCK);
+                break;
+            case REX_KEY_STATUS_RELEASE:
+                rex_game_set_trex_status(REX_GAME_TREX_WALK);
+                break;
+            }
 
             break;
-        case REX_KEY_RELEASE:
+        case REX_KEY_CODE_SPACE:
+            switch (rex_input_key.status)
+            {
+            case REX_KEY_STATUS_REPEAT:
+            case REX_KEY_STATUS_PRESS:
+                /* set trex status to jump */
+                rex_game_set_trex_status(REX_GAME_TREX_JUMP);
+                break;
+            case REX_KEY_STATUS_RELEASE:
+                break;
+            }
+
+            break;
         default:
             event = REX_BEGIN_SCENE_NOTHING_HAPPEN;
         }
@@ -54,11 +71,17 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
 
         struct rex_game_object *trex = rex_object_get_trex();
 
-        if (trex->detail.trex != REX_GAME_TREX_JUMP)
+        /* meaningless status */
+        if (trex->detail.trex == 0)
+        {
+            rex_scene_lock = nk_false;
             rex_game_set_trex_status(REX_GAME_TREX_WALK);
+        }
 
         /* try to generate a random obstacle in rex_objects */
         rex_game_generate_random_object();
+
+        rex_debug_print_rex_objects();
 
         rex_game_draw_objects(ctx);
 
@@ -68,6 +91,7 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
         /* score increases */
         rex_game_score_update();
 
+        /* handle collision detect here */
         if (rex_game_collision_detect() == nk_true)
             event = REX_MAIN_SCENE_GAME_OVER;
 

@@ -174,7 +174,66 @@ void rex_debug_print_rex_objects(void)
 
 void rex_debug_print_jump_distance_array(void)
 {
-    printf("[rex_debug_print_jump_distance_array (%d) (%d)]\n", need_frames_amount_one_way, rex_frame);
+    printf("[rex_debug_print_jump_distance_array (%d) (%d)] ", need_frames_amount_one_way, rex_frame);
     for (unsigned int i = 0; i < need_frames_amount_one_way; i++)
         printf("\t%u: %f\n", i, rex_game_trex_jump_distance_array[i]);
+}
+
+void rex_debug_print_keyboard_event(void)
+{
+    printf("[rex_debug_print_keyboard_event (%d) (%d)] ", rex_frame, rex_current_score);
+
+    char key_code[30] = "";
+    char key_status[30] = "";
+
+    switch (rex_input_key.code)
+    {
+    case REX_KEY_CODE_DOWN:
+        strcpy(key_code, "REX_KEY_CODE_DOWN");
+        break;
+    case REX_KEY_CODE_SPACE:
+        strcpy(key_code, "REX_KEY_CODE_SPACE");
+        break;
+    default:
+        strcpy(key_code, "REX_KEY_CODE_UNKNOWN");
+    }
+
+    switch (rex_input_key.status)
+    {
+    case REX_KEY_STATUS_REPEAT:
+        strcpy(key_status, "REX_KEY_STATUS_REPEAT");
+        break;
+    case REX_KEY_STATUS_PRESS:
+        strcpy(key_status, "REX_KEY_STATUS_PRESS");
+        break;
+    case REX_KEY_STATUS_RELEASE:
+        strcpy(key_status, "REX_KEY_STATUS_RELEASE");
+        break;
+    default:
+        strcpy(key_status, "REX_KEY_STATUS_UNKNOWN");
+    }
+
+    printf("code->%s, status->%s\n", key_code, key_status);
+}
+
+#include "collision.h"
+
+void collision_debug_print_collision_box(struct collision_box *box, char *msg)
+{
+    printf("[collision_debug_print_collision_box (%s) (%d)] ", msg, rex_current_score);
+    printf("(x,y)->(%f,%f), width->%u, height->%u\n", box->x, box->y, box->width, box->height);
+}
+
+void rex_debug_print_rex_collision_collection(struct rex_collision_collection *collection)
+{
+    unsigned int collection_amount = collection->amount;
+
+    printf("[rex_debug_print_rex_collision_collection (%d) (%d) (%d)]\n", collection_amount, rex_frame, rex_current_score);
+
+    for (unsigned int i = 0; i < collection->amount; i++)
+    {
+        struct collision_box *box = &collection->boxes[i];
+
+        printf("\t%u: (x,y)->(%f,%f), width->%u, height->%u\n", i, box->x, box->y, box->width, box->height);
+    }
 }
