@@ -27,7 +27,7 @@ void rex_game_generate_random_decoration(void)
     decoration->x = glfw.width;
 
     /* get random decoration */
-    srand(rex_frame);
+    srand(rex_random_seed + rex_frame);
     enum rex_game_decoration_type decoration_type = rand() % REX_GAME_DECORATION_TYPE_AMOUNT;
 
     switch (decoration_type)
@@ -35,7 +35,7 @@ void rex_game_generate_random_decoration(void)
     case REX_GAME_DECORATION_CLOUD:
     default:
     { /* draw cloud */
-        srand(rex_frame);
+        srand(rex_random_seed + rex_frame);
 
         struct rex_image image = rex_image_load(IMAGE_CLOUD_ID);
         decoration->width = image.width;
@@ -49,7 +49,7 @@ void rex_game_generate_random_decoration(void)
 
     int delta_frame = (decoration->width + glfw.width) / (rex_game_speed * REX_GAME_CLOUD_SPEED);
 
-    srand(rex_frame);
+    srand(rex_random_seed + rex_frame);
     int rand_factor = rand() % (REX_GAME_CREATE_OBJECT_MAX_FRAME_GAP - REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP);
     decoration->create_at_frame = rex_frame + rand_factor;
     decoration->destroy_at_frame = decoration->create_at_frame + delta_frame;

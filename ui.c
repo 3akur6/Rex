@@ -36,6 +36,11 @@ void ui_init(struct nk_context *ctx)
         rex_game_trex_generate_jump_distance_array();
     }
 
+    { /* generate random seed by time */
+        srand((unsigned int)time(NULL));
+        rex_random_seed = rand();
+    }
+
     return;
 }
 

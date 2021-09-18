@@ -22,7 +22,7 @@ void rex_game_generate_random_object(void)
         duration = MAX_FRAME_AMOUNT - rex_last_create_decoration_frame + rex_frame;
 
     /* shouldn't create new object if duration isn't equal min gap */
-    if (duration == REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP && rex_decoration_amount < REX_GAME_MAX_DECORATION_AMOUNT)
+    if (duration == (int)(REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP / (0.2 * REX_GAME_OBJECT_MOVE_SPEED)) && rex_decoration_amount < REX_GAME_MAX_DECORATION_AMOUNT)
         rex_game_generate_random_decoration();
 
     /* create obstacle object */
@@ -31,7 +31,7 @@ void rex_game_generate_random_object(void)
     else
         duration = MAX_FRAME_AMOUNT - rex_last_create_obstacle_frame + rex_frame;
 
-    if (duration == REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP && rex_obstacle_amount < REX_GAME_MAX_OBSTACLE_AMOUNT)
+    if (duration == (int)(REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP / (0.2 * REX_GAME_OBJECT_MOVE_SPEED)) && rex_obstacle_amount < REX_GAME_MAX_OBSTACLE_AMOUNT)
         rex_game_generate_random_obstacle();
 }
 

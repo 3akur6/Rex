@@ -25,7 +25,7 @@ void rex_game_generate_random_obstacle(void)
     obstacle.type = REX_GAME_OBJECT_OBSTACLE;
 
     /* get random type */
-    srand(rex_frame);
+    srand(rex_random_seed + rex_frame);
     enum rex_game_object_type detail_type = rand() % REX_GAME_OBSTACLE_TYPE_AMOUNT;
 
     obstacle.detail.obstacle = detail_type;
@@ -40,7 +40,7 @@ void rex_game_generate_random_obstacle(void)
         obstacle.width = image.width;
         obstacle.height = image.height;
         /* regenerate seed */
-        srand(rex_frame);
+        srand(rex_random_seed + rex_frame);
         /* random level to differentiate the y axis of pterodactyl */
         int level = rand() % 3;
         switch (level)
@@ -109,7 +109,7 @@ void rex_game_generate_random_obstacle(void)
 
     int delta_frame = (obstacle.width + glfw.width) / (rex_game_speed * REX_GAME_OBJECT_MOVE_SPEED);
 
-    srand(rex_frame);
+    srand(rex_random_seed + rex_frame);
     int rand_factor = rand() % (REX_GAME_CREATE_OBJECT_MAX_FRAME_GAP - REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP);
     obstacle.create_at_frame = rex_frame + rand_factor;
     obstacle.destroy_at_frame = obstacle.create_at_frame + delta_frame;
