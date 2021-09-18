@@ -40,6 +40,11 @@ void ui_init(struct nk_context *ctx)
         rex_keyboard_register_keyboard_events();
     }
 
+    { /* generate random seed by time */
+        srand((unsigned int)time(NULL));
+        rex_random_seed = rand();
+    }
+
     return;
 }
 

@@ -62,9 +62,9 @@
 #define REX_GAME_CACTUS_LARGE_Y_POSITION 466
 
 /* pterodactyl */
-#define REX_GAME_PTERODACTYL_Y_POSITION_1 200
-#define REX_GAME_PTERODACTYL_Y_POSITION_2 436
-#define REX_GAME_PTERODACTYL_Y_POSITION_3 386
+#define REX_GAME_PTERODACTYL_Y_POSITION_1 390
+#define REX_GAME_PTERODACTYL_Y_POSITION_2 440
+#define REX_GAME_PTERODACTYL_Y_POSITION_3 490
 
 /* cloud */
 #define REX_GAME_CLOUD_MAX_Y_POSITION 400
@@ -290,6 +290,7 @@
 #define END_SCENE_CURRENT_SCORE_Y REX_GAME_CURRENT_SCORE_Y_POSITION
 
 /* global varible */
+static unsigned int rex_random_seed;        /* global random seed */
 static unsigned char rex_refresh_cycle = 0; /* refresh cycle */
 static unsigned int rex_frame = 0;          /* frames */
 static nk_bool rex_scene_lock = nk_false;   /* not switch scene when lock */
