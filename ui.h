@@ -248,6 +248,19 @@
 #define STAR_X 1276
 #define STAR_Y 2
 
+/*==============================sound=====================================*/
+/* hit */
+#define SOUND_HIT_ID 0
+#define SOUND_HIT_PATH "sounds/hit.mp3"
+
+/* press */
+#define SOUND_PRESS_ID 1
+#define SOUND_PRESS_PATH "sounds/press.mp3"
+
+/* reached */
+#define SOUND_REACHED_ID 2
+#define SOUND_REACHED_PATH "sounds/reached.mp3"
+
 /*============================== all scenes ==============================*/
 /* define scenes name */
 #define BEGIN_SCENE_NAME "Begin Scene"
