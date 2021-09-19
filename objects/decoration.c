@@ -74,3 +74,13 @@ void rex_game_draw_decoration(struct nk_context *ctx, struct rex_game_object *de
         break;
     }
 }
+
+void rex_game_draw_freeze_decoration(struct nk_context *ctx, struct rex_game_object *decoration)
+{
+    switch (decoration->detail.decoration)
+    {
+    case REX_GAME_DECORATION_CLOUD:
+        rex_draw_image(ctx, IMAGE_CLOUD_ID, decoration->x, decoration->y);
+        break;
+    }
+}

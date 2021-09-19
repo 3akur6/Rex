@@ -177,3 +177,34 @@ struct rex_game_object *rex_game_get_closest_obstacle(void)
 
     return need_object;
 }
+
+void rex_game_draw_freeze_obstacle(struct nk_context *ctx, struct rex_game_object *obstacle)
+{
+    int image_id = -1; /* invalid id */
+    switch (obstacle->detail.obstacle)
+    {
+    case REX_GAME_OBSTACLE_PTERODACTYL:
+        image_id = IMAGE_PTERODACTYL_0_ID;
+        break;
+    case REX_GAME_OBSTACLE_CACTUS_SMALL_0:
+        image_id = IMAGE_CACTUS_SMALL_0_ID;
+        break;
+    case REX_GAME_OBSTACLE_CACTUS_SMALL_1:
+        image_id = IMAGE_CACTUS_SMALL_1_ID;
+        break;
+    case REX_GAME_OBSTACLE_CACTUS_SMALL_2:
+        image_id = IMAGE_CACTUS_SMALL_2_ID;
+        break;
+    case REX_GAME_OBSTACLE_CACTUS_LARGE_0:
+        image_id = IMAGE_CACTUS_LARGE_0_ID;
+        break;
+    case REX_GAME_OBSTACLE_CACTUS_LARGE_1:
+        image_id = IMAGE_CACTUS_LARGE_1_ID;
+        break;
+    case REX_GAME_OBSTACLE_CACTUS_LARGE_2:
+        image_id = IMAGE_CACTUS_LARGE_2_ID;
+        break;
+    }
+    if (image_id != -1)
+        rex_draw_image(ctx, image_id, obstacle->x, obstacle->y);
+}

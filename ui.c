@@ -90,6 +90,7 @@ void ui_run(struct nk_context *ctx, float width, float height)
 REX_GOTO_BEGIN_SCENE:
     current_scene = REX_BEGIN_SCENE;
     return;
+
 /* draw main scene */
 REX_GOTO_MAIN_SCENE:
 { /* reset */
@@ -108,10 +109,12 @@ REX_GOTO_MAIN_SCENE:
     horizon->active = ACTIVE;
 
     rex_current_score = 0;
+    rex_game_speed = REX_GAME_SPEED;
 }
 
     current_scene = REX_MAIN_SCENE;
     return;
+
 /* draw end scene */
 REX_GOTO_END_SCENE:
     /* update hi_score */
@@ -125,6 +128,7 @@ REX_GOTO_END_SCENE:
 
     current_scene = REX_END_SCENE;
     return;
+
 REX_GOTO_NOTHING_HAPPEN:
     return;
 }

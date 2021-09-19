@@ -92,6 +92,10 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
         /* score increases */
         rex_game_score_update();
 
+        if (rex_current_score % REX_GAME_LEVEL_UP_PER_SCORES == 0)
+            /* level up, speed up */
+            rex_game_speed += REX_GAME_SPEED_ADDEND;
+
         /* handle collision detect here */
         if (rex_game_collision_detect() == nk_true)
         {

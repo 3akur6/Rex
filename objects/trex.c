@@ -159,3 +159,8 @@ void rex_game_draw_trex(struct nk_context *ctx, struct rex_game_object *trex)
         rex_object_trex_walk(ctx, trex);
     }
 }
+
+void rex_game_draw_freeze_trex(struct nk_context *ctx, struct rex_game_object *trex)
+{
+    rex_draw_image(ctx, IMAGE_TREX_7_ID, trex->x, trex->y);
+}

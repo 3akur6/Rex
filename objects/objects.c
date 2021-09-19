@@ -22,7 +22,7 @@ void rex_game_generate_random_object(void)
         duration = MAX_FRAME_AMOUNT - rex_last_create_decoration_frame + rex_frame;
 
     /* shouldn't create new object if duration isn't equal min gap */
-    if (duration == (int)(REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP / (0.2 * REX_GAME_OBJECT_MOVE_SPEED)) && rex_decoration_amount < REX_GAME_MAX_DECORATION_AMOUNT)
+    if (duration == (int)(REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP / ((rex_game_speed - REX_GAME_SPEED) * REX_GAME_OBJECT_MOVE_SPEED)) && rex_decoration_amount < REX_GAME_MAX_DECORATION_AMOUNT)
         rex_game_generate_random_decoration();
 
     /* create obstacle object */
@@ -31,7 +31,7 @@ void rex_game_generate_random_object(void)
     else
         duration = MAX_FRAME_AMOUNT - rex_last_create_obstacle_frame + rex_frame;
 
-    if (duration == (int)(REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP / (0.2 * REX_GAME_OBJECT_MOVE_SPEED)) && rex_obstacle_amount < REX_GAME_MAX_OBSTACLE_AMOUNT)
+    if (duration == (int)(REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP / ((rex_game_speed - REX_GAME_SPEED) * REX_GAME_OBJECT_MOVE_SPEED)) && rex_obstacle_amount < REX_GAME_MAX_OBSTACLE_AMOUNT)
         rex_game_generate_random_obstacle();
 }
 
@@ -40,41 +40,13 @@ void rex_game_draw_freeze_object(struct nk_context *ctx, struct rex_game_object 
     switch (object->type)
     {
     case REX_GAME_OBJECT_TREX:
-        rex_draw_image(ctx, IMAGE_TREX_7_ID, object->x, object->y);
+        rex_game_draw_freeze_trex(ctx, object);
         break;
     case REX_GAME_OBJECT_OBSTACLE:
-        switch (object->detail.obstacle)
-        {
-        case REX_GAME_OBSTACLE_PTERODACTYL:
-            rex_draw_image(ctx, IMAGE_PTERODACTYL_0_ID, object->x, object->y);
-            break;
-        case REX_GAME_OBSTACLE_CACTUS_SMALL_0:
-            rex_draw_image(ctx, IMAGE_CACTUS_SMALL_0_ID, object->x, object->y);
-            break;
-        case REX_GAME_OBSTACLE_CACTUS_SMALL_1:
-            rex_draw_image(ctx, IMAGE_CACTUS_SMALL_1_ID, object->x, object->y);
-            break;
-        case REX_GAME_OBSTACLE_CACTUS_SMALL_2:
-            rex_draw_image(ctx, IMAGE_CACTUS_SMALL_2_ID, object->x, object->y);
-            break;
-        case REX_GAME_OBSTACLE_CACTUS_LARGE_0:
-            rex_draw_image(ctx, IMAGE_CACTUS_LARGE_0_ID, object->x, object->y);
-            break;
-        case REX_GAME_OBSTACLE_CACTUS_LARGE_1:
-            rex_draw_image(ctx, IMAGE_CACTUS_LARGE_1_ID, object->x, object->y);
-            break;
-        case REX_GAME_OBSTACLE_CACTUS_LARGE_2:
-            rex_draw_image(ctx, IMAGE_CACTUS_LARGE_2_ID, object->x, object->y);
-            break;
-        }
+        rex_game_draw_freeze_obstacle(ctx, object);
         break;
     case REX_GAME_OBJECT_DECORATION:
-        switch (object->detail.decoration)
-        {
-        case REX_GAME_DECORATION_CLOUD:
-            rex_draw_image(ctx, IMAGE_CLOUD_ID, object->x, object->y);
-            break;
-        }
+        rex_game_draw_freeze_decoration(ctx, object);
         break;
     }
 }

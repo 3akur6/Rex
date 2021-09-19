@@ -16,6 +16,8 @@
 #define WINDOW_HEIGHT 1080
 
 /* game settings */
+#define REX_GAME_SPEED_ADDEND 0.02
+#define REX_GAME_LEVEL_UP_PER_SCORES 100 /* level up per scores */
 #define REX_GAME_GRAVITY 0.6
 #define REX_GAME_JUMP_HEIGHT 200
 #define REX_GAME_JUMP_STEP 2
@@ -298,7 +300,7 @@ static unsigned char rex_refresh_cycle = 0; /* refresh cycle */
 static unsigned int rex_frame = 0;          /* frames */
 static nk_bool rex_scene_lock = nk_false;   /* not switch scene when lock */
 
-static unsigned char rex_game_speed = REX_GAME_SPEED;
+static float rex_game_speed = REX_GAME_SPEED;
 static unsigned int rex_hi_score = 0;
 static unsigned int rex_current_score = 0;
 
