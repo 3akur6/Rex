@@ -69,10 +69,18 @@ void rex_debug_print_rex_object(struct rex_game_object *object)
         break;
     }
 
-    if (object->active == nk_true)
-        strcpy(active_str, "active");
-    else
-        strcpy(active_str, "inactive");
+    switch (object->active)
+    {
+    case INACTIVE:
+        strcpy(active_str, "INACTIVE");
+        break;
+    case ACTIVE:
+        strcpy(active_str, "ACTIVE");
+        break;
+    case FREEZE:
+        strcpy(active_str, "FREEZE");
+        break;
+    }
 
     printf(
         "(%s): type->%s, detail->%s, (x,y)->(%.1f,%.1f), width->%d, height->%d, create_at_frame->%d, destroy_at_frame->%d\n",
@@ -155,10 +163,18 @@ void rex_debug_print_rex_objects(void)
             break;
         }
 
-        if (object.active == nk_true)
-            strcpy(active_str, "active");
-        else
-            strcpy(active_str, "inactive");
+        switch (object.active)
+        {
+        case INACTIVE:
+            strcpy(active_str, "INACTIVE");
+            break;
+        case ACTIVE:
+            strcpy(active_str, "ACTIVE");
+            break;
+        case FREEZE:
+            strcpy(active_str, "FREEZE");
+            break;
+        }
 
         printf(
             "\t%u(%s): type->%s, detail->%s, (x,y)->(%.1f,%.1f), width->%d, height->%d, create_at_frame->%d, destroy_at_frame->%d\n",
@@ -236,4 +252,28 @@ void rex_debug_print_rex_collision_collection(struct rex_collision_collection *c
 
         printf("\t%u: (x,y)->(%f,%f), width->%u, height->%u\n", i, box->x, box->y, box->width, box->height);
     }
+}
+
+void rex_debug_print_rex_horizon(void)
+{
+    struct rex_game_object_horizon *horizon = rex_object_get_horizon();
+
+    printf("[rex_debug_print_rex_horizon (%d) (%d)] ", rex_frame, rex_current_score);
+
+    char active_str[10] = "";
+
+    switch (horizon->active)
+    {
+    case INACTIVE:
+        strcpy(active_str, "INACTIVE");
+        break;
+    case ACTIVE:
+        strcpy(active_str, "ACTIVE");
+        break;
+    case FREEZE:
+        strcpy(active_str, "FREEZE");
+        break;
+    }
+
+    printf("(%s): (x,y)->(%f,%f), width->%u, height->%u, cut_begin->%f\n", active_str, horizon->x, horizon->y, horizon->width, horizon->height, horizon->cut_begin);
 }

@@ -35,6 +35,50 @@ void rex_game_generate_random_object(void)
         rex_game_generate_random_obstacle();
 }
 
+void rex_game_draw_freeze_object(struct nk_context *ctx, struct rex_game_object *object)
+{
+    switch (object->type)
+    {
+    case REX_GAME_OBJECT_TREX:
+        rex_draw_image(ctx, IMAGE_TREX_7_ID, object->x, object->y);
+        break;
+    case REX_GAME_OBJECT_OBSTACLE:
+        switch (object->detail.obstacle)
+        {
+        case REX_GAME_OBSTACLE_PTERODACTYL:
+            rex_draw_image(ctx, IMAGE_PTERODACTYL_0_ID, object->x, object->y);
+            break;
+        case REX_GAME_OBSTACLE_CACTUS_SMALL_0:
+            rex_draw_image(ctx, IMAGE_CACTUS_SMALL_0_ID, object->x, object->y);
+            break;
+        case REX_GAME_OBSTACLE_CACTUS_SMALL_1:
+            rex_draw_image(ctx, IMAGE_CACTUS_SMALL_1_ID, object->x, object->y);
+            break;
+        case REX_GAME_OBSTACLE_CACTUS_SMALL_2:
+            rex_draw_image(ctx, IMAGE_CACTUS_SMALL_2_ID, object->x, object->y);
+            break;
+        case REX_GAME_OBSTACLE_CACTUS_LARGE_0:
+            rex_draw_image(ctx, IMAGE_CACTUS_LARGE_0_ID, object->x, object->y);
+            break;
+        case REX_GAME_OBSTACLE_CACTUS_LARGE_1:
+            rex_draw_image(ctx, IMAGE_CACTUS_LARGE_1_ID, object->x, object->y);
+            break;
+        case REX_GAME_OBSTACLE_CACTUS_LARGE_2:
+            rex_draw_image(ctx, IMAGE_CACTUS_LARGE_2_ID, object->x, object->y);
+            break;
+        }
+        break;
+    case REX_GAME_OBJECT_DECORATION:
+        switch (object->detail.decoration)
+        {
+        case REX_GAME_DECORATION_CLOUD:
+            rex_draw_image(ctx, IMAGE_CLOUD_ID, object->x, object->y);
+            break;
+        }
+        break;
+    }
+}
+
 void rex_game_draw_objects(struct nk_context *ctx)
 {
     /* count the number of active objects then update rex_object_amount */
@@ -48,8 +92,9 @@ void rex_game_draw_objects(struct nk_context *ctx)
     {
         object = &rex_objects[i];
 
-        if (object->active == nk_true)
+        switch (object->active)
         {
+        case ACTIVE:
             object_active_amount++;
 
             switch (object->type)
@@ -66,10 +111,27 @@ void rex_game_draw_objects(struct nk_context *ctx)
                 rex_game_draw_decoration(ctx, object);
                 break;
             }
+            break;
+        case FREEZE:
+            rex_game_draw_freeze_object(ctx, object);
+            break;
         }
     }
     /* update rex_obstacle_amount */
     rex_object_amount = object_active_amount;
     rex_obstacle_amount = obstacle_active_amount;
     rex_decoration_amount = decoration_active_amount;
+}
+
+void rex_game_freeze_objects(void)
+{
+    struct rex_game_object *object;
+
+    for (unsigned int i = 0; i < REX_GAME_MAX_OBJECT_AMOUNT; i++)
+    {
+        object = &rex_objects[i];
+
+        if (object->active == ACTIVE)
+            object->active = FREEZE; /* set status to freeze */
+    }
 }

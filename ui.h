@@ -44,10 +44,13 @@
 #define REX_GAME_OBSTACLE_TYPE_AMOUNT 7
 #define REX_GAME_DECORATION_TYPE_AMOUNT 1
 
-#define REX_GAME_MAX_OBSTACLE_AMOUNT 4   /* define the max amount of obstacles drawing in one frame */
-#define REX_GAME_MAX_DECORATION_AMOUNT 4 /* define the max amount of decorations drawing in one frame */
+#define REX_GAME_MAX_OBSTACLE_AMOUNT 4   /* define the max amount of obstacles drew in one frame */
+#define REX_GAME_MAX_DECORATION_AMOUNT 4 /* define the max amount of decorations drew in one frame */
 
-#define REX_GAME_MAX_OBJECT_AMOUNT (REX_GAME_MAX_OBSTACLE_AMOUNT + REX_GAME_MAX_DECORATION_AMOUNT + 1) /* 1 is preserved for trex */
+/* additional place for trex at index (REX_GAME_MAX_OBJECT_AMOUNT - 1)
+ */
+#define REX_GAME_MAX_OBJECT_AMOUNT (REX_GAME_MAX_OBSTACLE_AMOUNT + REX_GAME_MAX_DECORATION_AMOUNT + 1)
+#define REX_GAME_OBJECT_TREX_INDEX (REX_GAME_MAX_OBJECT_AMOUNT - 1)
 
 /* trex */
 #define REX_GAME_TREX_X_POSITION 100
@@ -298,7 +301,6 @@ static nk_bool rex_scene_lock = nk_false;   /* not switch scene when lock */
 static unsigned char rex_game_speed = REX_GAME_SPEED;
 static unsigned int rex_hi_score = 0;
 static unsigned int rex_current_score = 0;
-static unsigned int rex_horizon_line_offset = 0;
 
 static const char rex_image_path_list[MAX_IMAGES_AMOUNT][MAX_PATH_LENGTH] = {
     IMAGE_CLOUD_PATH,

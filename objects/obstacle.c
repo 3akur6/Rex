@@ -8,10 +8,10 @@ void rex_game_generate_random_obstacle(void)
 
     /* replace one of the inactive obstacles with new obstacle */
     unsigned char i;
-    /* 0 is preserved for trex */
-    for (i = 1; i < REX_GAME_MAX_OBJECT_AMOUNT; i++)
+    /* the last one is preserved for trex */
+    for (i = 0; i < REX_GAME_MAX_OBJECT_AMOUNT - 1; i++)
     {
-        if (rex_objects[i].active == nk_false)
+        if (rex_objects[i].active == INACTIVE)
             break; /* find inactive object */
     }
 
@@ -21,7 +21,7 @@ void rex_game_generate_random_obstacle(void)
 
     struct rex_game_object obstacle;
     /* activate obstacle */
-    obstacle.active = nk_true;
+    obstacle.active = ACTIVE;
     obstacle.type = REX_GAME_OBJECT_OBSTACLE;
 
     /* get random type */
@@ -126,7 +126,7 @@ void rex_game_draw_obstacle(struct nk_context *ctx, struct rex_game_object *obst
     /* target destroy frame */
     if (rex_frame == obstacle->destroy_at_frame)
     {
-        obstacle->active = nk_false;
+        obstacle->active = INACTIVE;
         return;
     }
 
@@ -155,16 +155,16 @@ struct rex_game_object *rex_game_get_closest_obstacle(void)
     struct rex_game_object *object;
     float min = 0; /* default */
 
-    struct rex_game_object *trex = &rex_objects[0]; /* get trex object */
+    struct rex_game_object *trex = rex_object_get_trex(); /* get trex object */
     float trex_x = trex->x;
     float trex_x_right = trex->x + trex->width;
 
-    for (unsigned char i = 1; i < REX_GAME_MAX_OBJECT_AMOUNT; i++)
+    for (unsigned char i = 0; i < REX_GAME_MAX_OBJECT_AMOUNT - 1; i++)
     {
         object = &rex_objects[i];
         float object_x = object->x;
         float object_x_right = object_x + object->width;
-        if (object->active == nk_true && object->type == REX_GAME_OBJECT_OBSTACLE && trex_x < object_x_right)
+        if (object->active == ACTIVE && object->type == REX_GAME_OBJECT_OBSTACLE && trex_x < object_x_right)
         {
             float delta_x = object_x - trex_x_right;
             if (delta_x < min || min == 0)

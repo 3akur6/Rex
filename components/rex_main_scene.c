@@ -81,7 +81,8 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
         /* try to generate a random obstacle in rex_objects */
         rex_game_generate_random_object();
 
-        rex_debug_print_rex_objects();
+        /* draw horizon */
+        rex_object_draw_horizon(ctx);
 
         rex_game_draw_objects(ctx);
 
@@ -93,9 +94,10 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
 
         /* handle collision detect here */
         if (rex_game_collision_detect() == nk_true)
+        {
             event = REX_MAIN_SCENE_GAME_OVER;
-
-        rex_horizon_line_roll(ctx, MAIN_SCENE_HORIZON_X, MAIN_SCENE_HORIZON_Y);
+            rex_end_frames();
+        }
     }
 
     nk_end(ctx);

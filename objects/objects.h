@@ -1,3 +1,6 @@
+#ifndef OBJECTS_H_
+#define OBJECTS_H_
+
 enum rex_game_object_type
 {
     REX_GAME_OBJECT_TREX = 1,   /* trex */
@@ -29,9 +32,16 @@ enum rex_game_decoration_type
     REX_GAME_DECORATION_CLOUD,
 };
 
+enum rex_game_object_status_type
+{
+    INACTIVE,
+    ACTIVE,
+    FREEZE,
+};
+
 struct rex_game_object
 {
-    nk_bool active;
+    enum rex_game_object_status_type active;
     enum rex_game_object_type type;
     union
     {
@@ -46,3 +56,5 @@ struct rex_game_object
     unsigned int create_at_frame;
     unsigned int destroy_at_frame;
 };
+
+#endif

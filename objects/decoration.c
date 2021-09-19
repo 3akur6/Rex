@@ -8,10 +8,10 @@ void rex_game_generate_random_decoration(void)
         return;
 
     unsigned char i;
-    /* 0 is preserved for trex */
-    for (i = 1; i < REX_GAME_MAX_OBJECT_AMOUNT; i++)
+    /* the last one is preserved for trex */
+    for (i = 0; i < REX_GAME_MAX_OBJECT_AMOUNT - 1; i++)
     {
-        if (rex_objects[i].active == nk_false)
+        if (rex_objects[i].active == INACTIVE)
             break; /* find inactive object */
     }
 
@@ -21,7 +21,7 @@ void rex_game_generate_random_decoration(void)
 
     struct rex_game_object *decoration;
     decoration = &rex_objects[i]; /* decoration points to inactive object */
-    decoration->active = nk_true;
+    decoration->active = ACTIVE;
     decoration->type = REX_GAME_OBJECT_DECORATION;
 
     decoration->x = glfw.width;
@@ -63,7 +63,7 @@ void rex_game_draw_decoration(struct nk_context *ctx, struct rex_game_object *de
     /* target destroy frame */
     if (decoration->destroy_at_frame == rex_frame)
     {
-        decoration->active = nk_false;
+        decoration->active = INACTIVE;
         return;
     }
 

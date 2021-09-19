@@ -3,8 +3,6 @@
 static float rex_game_trex_jump_distance_array[MAX_DISTANCE_ARRAY_SIZE];
 static int need_frames_amount_one_way;
 
-#include "../libs/debug.c"
-
 void rex_game_trex_generate_jump_distance_array()
 {
 
@@ -15,11 +13,16 @@ void rex_game_trex_generate_jump_distance_array()
     }
 }
 
+struct rex_game_object *rex_object_get_trex(void)
+{
+    return &rex_objects[REX_GAME_OBJECT_TREX_INDEX];
+}
+
 /* won't change status if trex object in queue */
 void rex_game_init_trex(void)
 {
-    /* place trex object in array[0] */
-    struct rex_game_object *trex = &rex_objects[0];
+    /* place trex object in array[REX_GAME_MAX_OBJECT_AMOUNT - 1] */
+    struct rex_game_object *trex = rex_object_get_trex();
     /* trex is already in rex_objects */
     if (trex->type == REX_GAME_OBJECT_TREX)
         return;
@@ -28,7 +31,7 @@ void rex_game_init_trex(void)
     struct rex_image image;
     image = rex_image_load(IMAGE_TREX_2_ID);
 
-    trex->active = nk_true;
+    trex->active = ACTIVE;
     trex->type = REX_GAME_OBJECT_TREX;
     trex->width = image.width;
     trex->height = image.height;
@@ -39,14 +42,11 @@ void rex_game_init_trex(void)
     trex->detail.trex = REX_GAME_TREX_STATIC; /* default value */
 }
 
-struct rex_game_object *rex_object_get_trex(void)
-{
-    return &rex_objects[0];
-}
-
 void rex_game_set_trex_status(enum rex_game_trex_type trex_status)
 {
-    rex_objects[0].detail.trex = trex_status;
+    struct rex_game_object *trex = rex_object_get_trex();
+
+    trex->detail.trex = trex_status;
 }
 
 void rex_object_trex_walk(struct nk_context *ctx, struct rex_game_object *trex)

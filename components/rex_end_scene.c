@@ -55,10 +55,17 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
     /* draw scene here */
     nk_begin(ctx, END_SCENE_NAME, nk_rect(0, 0, window_width, window_height), NK_WINDOW_BACKGROUND);
     {
+        /* only init once */
+        rex_object_init_horizon();
+        /* draw static objects */
+        rex_game_draw_objects(ctx);
+
+        /* draw horizon */
+        rex_object_draw_horizon(ctx);
+
         /* draw images */
         rex_draw_image(ctx, IMAGE_GAME_OVER_TEXT_ID, END_SCENE_GAME_OVER_X, END_SCENE_GAME_OVER_Y);
         rex_draw_image(ctx, IMAGE_RESTART_ID, END_SCENE_RESTART_X, END_SCENE_RESTART_Y);
-        rex_draw_image(ctx, IMAGE_TREX_7_ID, END_SCENE_TREX_X, END_SCENE_HORIZON_Y - END_SCENE_FALL_BETWEEN_TREX_HORIZON);
         /* draw hi score */
         rex_end_scene_hi_score(ctx, END_SCENE_HI_SCORE_X, END_SCENE_HI_SCORE_Y);
         /* draw current score */

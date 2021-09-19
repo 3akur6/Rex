@@ -10,7 +10,7 @@ void rex_object_cloud_float(struct nk_context *ctx, struct rex_game_object *clou
             rex_draw_image(ctx, IMAGE_CLOUD_ID, cloud->x, cloud->y);
         else if (rex_frame == destroy)
         { /* disable */
-            cloud->active = nk_false;
+            cloud->active = INACTIVE;
             return;
         }
     }
@@ -22,7 +22,7 @@ void rex_object_cloud_float(struct nk_context *ctx, struct rex_game_object *clou
         }
         else if (rex_frame == destroy)
         { /* disable */
-            cloud->active = nk_false;
+            cloud->active = INACTIVE;
             return;
         }
     }

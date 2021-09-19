@@ -93,11 +93,21 @@ REX_GOTO_BEGIN_SCENE:
 /* draw main scene */
 REX_GOTO_MAIN_SCENE:
 { /* reset */
-    for (unsigned int i = 1; i < REX_GAME_MAX_OBJECT_AMOUNT; i++)
-        rex_objects[i].active = nk_false;
+    /* clear all objects except trex in queue */
+    for (unsigned int i = 0; i < REX_GAME_MAX_OBJECT_AMOUNT - 1; i++)
+        rex_objects[i].active = INACTIVE;
+
+    /* set trex to active */
+    struct rex_game_object *trex = rex_object_get_trex();
+    trex->active = ACTIVE;
+
+    /* only init once */
+    rex_object_init_horizon();
+    /* set horizon to active */
+    struct rex_game_object_horizon *horizon = rex_object_get_horizon();
+    horizon->active = ACTIVE;
 
     rex_current_score = 0;
-    rex_end_frames();
 }
 
     current_scene = REX_MAIN_SCENE;
@@ -107,6 +117,11 @@ REX_GOTO_END_SCENE:
     /* update hi_score */
     if (rex_hi_score < rex_current_score)
         rex_hi_score = rex_current_score;
+
+    /* freeze all objects */
+    rex_game_freeze_objects();
+    /* freeze horizon */
+    rex_object_freeze_horizon();
 
     current_scene = REX_END_SCENE;
     return;
