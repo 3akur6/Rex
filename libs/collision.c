@@ -120,3 +120,34 @@ nk_bool rex_game_collision_detect(void)
 
     return nk_false;
 }
+
+/*
+struct collision_box
+{
+    float x;
+    float y;
+    unsigned int width;
+    unsigned int height;
+};
+*/
+void rex_game_init_rex_collision_collections(void)
+{
+    struct rex_collision_collection *collection;
+    { /* trex collision collection */
+        collection = &rex_collision_collections[REX_TREX_COLLISION_COLLECTION_INDEX];
+        /* total collision boxes for trex */
+        collection->amount = 5;
+        { /* trex collision box 0 */
+            collection->boxes[0].x = 10;
+            collection->boxes[0].y = 10;
+            collection->boxes[0].width = 10;
+            collection->boxes[0].height = 10;
+        }
+        { /* trex collision box 1 */
+            collection->boxes[1].x = 10;
+            collection->boxes[1].y = 10;
+            collection->boxes[1].width = 10;
+            collection->boxes[1].height = 10;
+        }
+    }
+}
