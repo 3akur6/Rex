@@ -250,17 +250,18 @@
 #define STAR_Y 2
 
 /*==============================sound=====================================*/
+#define SOUND_AMOUNT 3
 /* hit */
 #define SOUND_HIT_ID 0
-#define SOUND_HIT_PATH "sounds/hit.mp3"
+#define SOUND_HIT_PATH "sounds/hit.ogg"
 
 /* press */
 #define SOUND_PRESS_ID 1
-#define SOUND_PRESS_PATH "sounds/press.mp3"
+#define SOUND_PRESS_PATH "sounds/press.ogg"
 
 /* reached */
 #define SOUND_REACHED_ID 2
-#define SOUND_REACHED_PATH "sounds/reached.mp3"
+#define SOUND_REACHED_PATH "sounds/reached.ogg"
 
 /*============================== all scenes ==============================*/
 /* define scenes name */
@@ -317,6 +318,15 @@ static nk_bool rex_scene_lock = nk_false;   /* not switch scene when lock */
 static float rex_game_speed = REX_GAME_SPEED;
 static unsigned int rex_hi_score = 0;
 static unsigned int rex_current_score = 0;
+
+static cs_context_t *rex_sound_ctx;                    /* sound context */
+static cs_loaded_sound_t rex_sounds_buf[SOUND_AMOUNT]; /* sounds in memory */
+static cs_play_sound_def_t rex_sounds[SOUND_AMOUNT];   /* sounds definition */
+
+static const char rex_sound_path_list[SOUND_AMOUNT][MAX_PATH_LENGTH] = {
+    SOUND_HIT_PATH,
+    SOUND_PRESS_PATH,
+    SOUND_REACHED_PATH};
 
 static const char rex_image_path_list[MAX_IMAGES_AMOUNT][MAX_PATH_LENGTH] = {
     IMAGE_CLOUD_PATH,

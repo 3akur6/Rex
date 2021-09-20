@@ -51,6 +51,9 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
             {
             case REX_KEY_STATUS_REPEAT:
             case REX_KEY_STATUS_PRESS:
+                rex_scene_lock = nk_true;
+                /* play press sound */
+                cs_play_sound(rex_sound_ctx, rex_sounds[SOUND_PRESS_ID]);
                 /* set trex status to jump */
                 rex_game_set_trex_status(REX_GAME_TREX_JUMP);
                 break;
@@ -92,13 +95,19 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
         /* score increases */
         rex_game_score_update();
 
-        if (rex_current_score % REX_GAME_LEVEL_UP_PER_SCORES == 0)
+        if (rex_current_score % REX_GAME_LEVEL_UP_PER_SCORES == 0 && rex_current_score != 0)
+        {
+            /* play sound */
+            cs_play_sound(rex_sound_ctx, rex_sounds[SOUND_REACHED_ID]);
             /* level up, speed up */
             rex_game_speed += REX_GAME_SPEED_ADDEND;
+        }
 
         /* handle collision detect here */
         if (rex_game_collision_detect() == nk_true)
         {
+            /* play sound */
+            cs_play_sound(rex_sound_ctx, rex_sounds[SOUND_HIT_ID]);
             event = REX_MAIN_SCENE_GAME_OVER;
             rex_end_frames();
         }

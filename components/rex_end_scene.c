@@ -36,6 +36,8 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
             {
             case REX_KEY_STATUS_REPEAT:
             case REX_KEY_STATUS_PRESS:
+                /* play sound */
+                cs_play_sound(rex_sound_ctx, rex_sounds[SOUND_PRESS_ID]);
                 /* event lock */
                 rex_scene_lock = nk_true;
                 break;

@@ -45,7 +45,23 @@ void ui_init(struct nk_context *ctx)
         rex_random_seed = rand();
     }
 
-    return;
+    { /* init sound context and load sound files */
+        unsigned int frequency = 44100;
+        int buffered_samples = 16; /* set small buffer size to flush quickly */
+        int playing_pool_count = SOUND_AMOUNT;
+
+        rex_sound_ctx = cs_make_context(NULL, frequency, buffered_samples, playing_pool_count, NULL);
+        cs_spawn_mix_thread(rex_sound_ctx);
+
+        for (unsigned char i = 0; i < playing_pool_count; i++)
+        {
+            rex_sounds_buf[i] = cs_load_ogg(rex_sound_path_list[i]);
+            if (rex_sounds_buf[i].channels[0] == NULL)
+                fprintf(stderr, "[cs_load_ogg] %s\n", cs_error_reason);
+
+            rex_sounds[i] = cs_make_def(&rex_sounds_buf[i]);
+        }
+    }
 }
 
 void ui_run(struct nk_context *ctx, float width, float height)

@@ -12,6 +12,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <SDL2/SDL.h>
+
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
 #define NK_INCLUDE_STANDARD_VARARGS
@@ -22,10 +24,14 @@
 #define NK_IMPLEMENTATION
 #define NK_GLFW_GL3_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
+#define CUTE_SOUND_FORCE_SDL
+#define CUTE_SOUND_IMPLEMENTATION
 #define NK_KEYSTATE_BASED_INPUT
 #include "libs/nuklear.h"
 #include "libs/nuklear_glfw_gl3.h"
 #include "libs/stb_image.h"
+#include "libs/stb_vorbis.c"
+#include "libs/cute_sound.h"
 #include "ui.h"
 
 #include "libs/utilities.c"
