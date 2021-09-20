@@ -17,92 +17,78 @@ nk_bool collision_detect(struct collision_box *box1, struct collision_box *box2)
     return nk_true;
 }
 
-void rex_game_trex_get_collision_collection(struct rex_game_object *trex, struct rex_collision_collection *collection)
+struct rex_collision_collection *rex_game_trex_get_collision_collection(struct rex_game_object *trex)
 {
-    collection->amount = 1;
-
-    struct collision_box box;
-    box.x = trex->x;
-    box.y = trex->y;
-    box.width = trex->width;
-    box.height = trex->height;
-
-    collection->boxes[0] = box;
+    switch (trex->detail.trex)
+    {
+    case REX_GAME_TREX_JUMP:
+    case REX_GAME_TREX_WALK:
+        return &rex_collision_collections[REX_TREX_WALK_COLLISION_COLLECTION_INDEX];
+    case REX_GAME_TREX_DUCK:
+        return &rex_collision_collections[REX_TREX_DUCK_COLLISION_COLLECTION_INDEX];
+    }
 }
 
-void rex_game_obstacle_get_collision_collection(struct rex_game_object *obstacle, struct rex_collision_collection *collection)
+struct rex_collision_collection *rex_game_obstacle_get_collision_collection(struct rex_game_object *obstacle)
 {
-    collection->amount = 1;
-
-    struct collision_box box;
-    box.x = obstacle->x;
-    box.y = obstacle->y;
-    box.width = obstacle->width;
-    box.height = obstacle->height;
-
-    // switch (obstacle->detail.obstacle)
-    // {
-    // case REX_GAME_OBSTACLE_PTERODACTYL:
-    // {
-    //     box.width = trex;
-    //     break;
-    // }
-    // case REX_GAME_OBSTACLE_CACTUS_SMALL_0:
-    // {
-    //     break;
-    // }
-    // case REX_GAME_OBSTACLE_CACTUS_SMALL_1:
-    // {
-    //     break;
-    // }
-    // case REX_GAME_OBSTACLE_CACTUS_SMALL_2:
-    // {
-    //     break;
-    // }
-    // case REX_GAME_OBSTACLE_CACTUS_LARGE_0:
-    // {
-    //     break;
-    // }
-    // case REX_GAME_OBSTACLE_CACTUS_LARGE_1:
-    // {
-    //     break;
-    // }
-    // case REX_GAME_OBSTACLE_CACTUS_LARGE_2:
-    // {
-    //     break;
-    // }
-    // }
-
-    collection->boxes[0] = box;
+    switch (obstacle->detail.obstacle)
+    {
+    case REX_GAME_OBSTACLE_PTERODACTYL:
+    {
+        return &rex_collision_collections[REX_PTERODACTYL_COLLISION_COLLECTION_INDEX];
+    }
+    case REX_GAME_OBSTACLE_CACTUS_SMALL_0:
+    {
+        return &rex_collision_collections[REX_CACTUS_SMALL_0_COLLISION_COLLECTION_INDEX];
+    }
+    case REX_GAME_OBSTACLE_CACTUS_SMALL_1:
+    {
+        return &rex_collision_collections[REX_CACTUS_SMALL_1_COLLISION_COLLECTION_INDEX];
+    }
+    case REX_GAME_OBSTACLE_CACTUS_SMALL_2:
+    {
+        return &rex_collision_collections[REX_CACTUS_SMALL_2_COLLISION_COLLECTION_INDEX];
+    }
+    case REX_GAME_OBSTACLE_CACTUS_LARGE_0:
+    {
+        return &rex_collision_collections[REX_CACTUS_LARGE_0_COLLISION_COLLECTION_INDEX];
+    }
+    case REX_GAME_OBSTACLE_CACTUS_LARGE_1:
+    {
+        return &rex_collision_collections[REX_CACTUS_LARGE_1_COLLISION_COLLECTION_INDEX];
+    }
+    case REX_GAME_OBSTACLE_CACTUS_LARGE_2:
+    {
+        return &rex_collision_collections[REX_CACTUS_LARGE_2_COLLISION_COLLECTION_INDEX];
+    }
+    }
 }
 
-void rex_game_object_get_collison_collection(struct rex_game_object *object, struct rex_collision_collection *collection)
+struct rex_collision_collection *rex_game_object_get_collison_collection(struct rex_game_object *object)
 {
     switch (object->type)
     { /* ignore decoration object */
     case REX_GAME_OBJECT_TREX:
-        rex_game_trex_get_collision_collection(object, collection);
-        break;
+        return rex_game_trex_get_collision_collection(object);
     case REX_GAME_OBJECT_OBSTACLE:
-        rex_game_obstacle_get_collision_collection(object, collection);
-        break;
+        return rex_game_obstacle_get_collision_collection(object);
     }
 }
 
 /* shouldn't call this function in other place */
 nk_bool _rex_game_collision_detect(struct rex_game_object *object1, struct rex_game_object *object2)
 {
-    struct rex_collision_collection collection1;
-    struct rex_collision_collection collection2;
+    struct rex_collision_collection *collection1 = rex_game_object_get_collison_collection(object1);
+    struct rex_collision_collection *collection2 = rex_game_object_get_collison_collection(object2);
 
-    rex_game_object_get_collison_collection(object1, &collection1);
-    rex_game_object_get_collison_collection(object2, &collection2);
+    rex_debug_print_rex_collision_collection(collection1);
+    rex_debug_print_rex_collision_collection(collection2);
 
-    for (unsigned char i = 0; i < collection1.amount; i++)
+    for (unsigned char i = 0; i < collection1->amount; i++)
     { /* iterate collection1 boxes */
-        for (unsigned char j = 0; j < collection2.amount; j++)
+        for (unsigned char j = 0; j < collection2->amount; j++)
         { /* iterate collection2 boxes */
-            if (collision_detect(&collection1.boxes[i], &collection2.boxes[j]) == nk_true)
+            if (collision_detect(&collection1->boxes[i], &collection2->boxes[j]) == nk_true)
                 return nk_true;
         }
     }
@@ -121,33 +107,261 @@ nk_bool rex_game_collision_detect(void)
     return nk_false;
 }
 
-/*
-struct collision_box
-{
-    float x;
-    float y;
-    unsigned int width;
-    unsigned int height;
-};
-*/
-void rex_game_init_rex_collision_collections(void)
+void rex_game_init_trex_walk_collision_collection(void)
 {
     struct rex_collision_collection *collection;
-    { /* trex collision collection */
-        collection = &rex_collision_collections[REX_TREX_COLLISION_COLLECTION_INDEX];
-        /* total collision boxes for trex */
-        collection->amount = 5;
-        { /* trex collision box 0 */
-            collection->boxes[0].x = 10;
-            collection->boxes[0].y = 10;
-            collection->boxes[0].width = 10;
-            collection->boxes[0].height = 10;
+    { /* trex_walk collision collection */
+        collection = &rex_collision_collections[REX_TREX_WALK_COLLISION_COLLECTION_INDEX];
+        /* total collision boxes for trex_walk*/
+        collection->amount = 4;
+        { /* trex_walk collision box 0 */
+            collection->boxes[0].x = 4;
+            collection->boxes[0].y = 42;
+            collection->boxes[0].width = 56;
+            collection->boxes[0].height = 28;
         }
-        { /* trex collision box 1 */
-            collection->boxes[1].x = 10;
-            collection->boxes[1].y = 10;
-            collection->boxes[1].width = 10;
-            collection->boxes[1].height = 10;
+        { /* trex_walk collision box 1 */
+            collection->boxes[1].x = 20;
+            collection->boxes[1].y = 70;
+            collection->boxes[1].width = 32;
+            collection->boxes[1].height = 20;
+        }
+        { /* trex_walk collision box 2 */
+            collection->boxes[2].x = 44;
+            collection->boxes[2].y = 4;
+            collection->boxes[2].width = 40;
+            collection->boxes[2].height = 30;
+        }
+        { /* trex_walk collision box 3 */
+            collection->boxes[3].x = 60;
+            collection->boxes[3].y = 42;
+            collection->boxes[3].width = 8;
+            collection->boxes[3].height = 8;
         }
     }
+}
+
+void rex_game_init_trex_duck_collision_collection(void)
+{
+    struct rex_collision_collection *collection;
+    { /* trex_duck collision collection */
+        collection = &rex_collision_collections[REX_TREX_DUCK_COLLISION_COLLECTION_INDEX];
+        /* total collision boxes for trex_duck */
+        collection->amount = 1;
+        { /* trex_duck collision box 0 */
+            collection->boxes[0].x = 78;
+            collection->boxes[0].y = 6;
+            collection->boxes[0].width = 36;
+            collection->boxes[0].height = 30;
+        }
+    }
+}
+
+void rex_game_init_cactus_large_0_collision_collection(void)
+{
+    struct rex_collision_collection *collection;
+    { /* cactus_large_0 collision collection */
+        collection = &rex_collision_collections[REX_CACTUS_LARGE_0_COLLISION_COLLECTION_INDEX];
+        /* total collision boxes for cactus_large_0 */
+        collection->amount = 3;
+        { /* cactus_large_0 collision box 0 */
+            collection->boxes[0].x = 2;
+            collection->boxes[0].y = 26;
+            collection->boxes[0].width = 10;
+            collection->boxes[0].height = 32;
+        }
+        { /* cactus_large_0 collision box 1 */
+            collection->boxes[1].x = 18;
+            collection->boxes[1].y = 2;
+            collection->boxes[1].width = 14;
+            collection->boxes[1].height = 24;
+        }
+        { /* cactus_large_0 collision box 2 */
+            collection->boxes[2].x = 38;
+            collection->boxes[2].y = 22;
+            collection->boxes[2].width = 10;
+            collection->boxes[2].height = 32;
+        }
+    }
+}
+
+void rex_game_init_cactus_large_1_collision_collection(void)
+{
+    struct rex_collision_collection *collection;
+    { /* cactus_large_1 collision collection */
+        collection = &rex_collision_collections[REX_CACTUS_LARGE_1_COLLISION_COLLECTION_INDEX];
+        /* total collision boxes for cactus_large_1 */
+        collection->amount = 3;
+        { /* cactus_large_1 collision box 0 */
+            collection->boxes[0].x = 2;
+            collection->boxes[0].y = 26;
+            collection->boxes[0].width = 10;
+            collection->boxes[0].height = 32;
+        }
+        { /* cactus_large_1 collision box 1 */
+            collection->boxes[1].x = 18;
+            collection->boxes[1].y = 12;
+            collection->boxes[1].width = 64;
+            collection->boxes[1].height = 14;
+        }
+        { /* cactus_large_1 collision box 2 */
+            collection->boxes[2].x = 88;
+            collection->boxes[2].y = 22;
+            collection->boxes[2].width = 10;
+            collection->boxes[2].height = 32;
+        }
+    }
+}
+
+void rex_game_init_cactus_large_2_collision_collection(void)
+{
+    struct rex_collision_collection *collection;
+    { /* cactus_large_2 collision collection */
+        collection = &rex_collision_collections[REX_CACTUS_LARGE_2_COLLISION_COLLECTION_INDEX];
+        /* total collision boxes for cactus_large_2 */
+        collection->amount = 3;
+        { /* cactus_large_2 collision box 0 */
+            collection->boxes[0].x = 2;
+            collection->boxes[0].y = 26;
+            collection->boxes[0].width = 10;
+            collection->boxes[0].height = 32;
+        }
+        { /* cactus_large_2 collision box 1 */
+            collection->boxes[1].x = 18;
+            collection->boxes[1].y = 16;
+            collection->boxes[1].width = 114;
+            collection->boxes[1].height = 10;
+        }
+        { /* cactus_large_2 collision box 2 */
+            collection->boxes[2].x = 138;
+            collection->boxes[2].y = 24;
+            collection->boxes[2].width = 10;
+            collection->boxes[2].height = 30;
+        }
+    }
+}
+
+void rex_game_init_cactus_small_0_collision_collection(void)
+{
+    struct rex_collision_collection *collection;
+    { /* cactus_small_0 collision collection */
+        collection = &rex_collision_collections[REX_CACTUS_SMALL_0_COLLISION_COLLECTION_INDEX];
+        /* total collision boxes for cactus_small_0 */
+        collection->amount = 3;
+        { /* cactus_small_0 collision box 0 */
+            collection->boxes[0].x = 2;
+            collection->boxes[0].y = 18;
+            collection->boxes[0].width = 6;
+            collection->boxes[0].height = 24;
+        }
+        { /* cactus_small_0 collision box 1 */
+            collection->boxes[1].x = 12;
+            collection->boxes[1].y = 2;
+            collection->boxes[1].width = 10;
+            collection->boxes[1].height = 16;
+        }
+        { /* cactus_small_0 collision box 2 */
+            collection->boxes[2].x = 26;
+            collection->boxes[2].y = 10;
+            collection->boxes[2].width = 6;
+            collection->boxes[2].height = 24;
+        }
+    }
+}
+
+void rex_game_init_cactus_small_1_collision_collection(void)
+{
+    struct rex_collision_collection *collection;
+    { /* cactus_small_1 collision collection */
+        collection = &rex_collision_collections[REX_CACTUS_SMALL_1_COLLISION_COLLECTION_INDEX];
+        /* total collision boxes for cactus_small_1 */
+        collection->amount = 3;
+        { /* cactus_small_1 collision box 0 */
+            collection->boxes[0].x = 2;
+            collection->boxes[0].y = 18;
+            collection->boxes[0].width = 6;
+            collection->boxes[0].height = 24;
+        }
+        { /* cactus_small_1 collision box 1 */
+            collection->boxes[1].x = 12;
+            collection->boxes[1].y = 10;
+            collection->boxes[1].width = 44;
+            collection->boxes[1].height = 8;
+        }
+        { /* cactus_small_1 collision box 2 */
+            collection->boxes[2].x = 60;
+            collection->boxes[2].y = 10;
+            collection->boxes[2].width = 6;
+            collection->boxes[2].height = 26;
+        }
+    }
+}
+
+void rex_game_init_cactus_small_2_collision_collection(void)
+{
+    struct rex_collision_collection *collection;
+    { /* cactus_small_2 collision collection */
+        collection = &rex_collision_collections[REX_CACTUS_SMALL_2_COLLISION_COLLECTION_INDEX];
+        /* total collision boxes for cactus_small_2 */
+        collection->amount = 3;
+        { /* cactus_small_2 collision box 0 */
+            collection->boxes[0].x = 2;
+            collection->boxes[0].y = 18;
+            collection->boxes[0].width = 6;
+            collection->boxes[0].height = 24;
+        }
+        { /* cactus_small_2 collision box 1 */
+            collection->boxes[1].x = 12;
+            collection->boxes[1].y = 10;
+            collection->boxes[1].width = 78;
+            collection->boxes[1].height = 8;
+        }
+        { /* cactus_small_2 collision box 2 */
+            collection->boxes[2].x = 94;
+            collection->boxes[2].y = 10;
+            collection->boxes[2].width = 6;
+            collection->boxes[2].height = 26;
+        }
+    }
+}
+
+void rex_game_init_pterodactyl_collision_collection(void)
+{
+    struct rex_collision_collection *collection;
+    { /* pterodactyl collision collection */
+        collection = &rex_collision_collections[REX_PTERODACTYL_COLLISION_COLLECTION_INDEX];
+        /* total collision boxes for pterodactyl */
+        collection->amount = 3;
+        { /* pterodactyl collision box 0 */
+            collection->boxes[0].x = 4;
+            collection->boxes[0].y = 24;
+            collection->boxes[0].width = 28;
+            collection->boxes[0].height = 12;
+        }
+        { /* pterodactyl collision box 1 */
+            collection->boxes[1].x = 36;
+            collection->boxes[1].y = 24;
+            collection->boxes[1].width = 36;
+            collection->boxes[1].height = 40;
+        }
+        { /* pterodactyl collision box 2 */
+            collection->boxes[2].x = 64;
+            collection->boxes[2].y = 40;
+            collection->boxes[2].width = 16;
+            collection->boxes[2].height = 16;
+        }
+    }
+}
+
+void rex_game_init_rex_collision_collections(void)
+{
+    rex_game_init_trex_walk_collision_collection();
+    rex_game_init_trex_duck_collision_collection();
+    rex_game_init_cactus_large_0_collision_collection();
+    rex_game_init_cactus_large_1_collision_collection();
+    rex_game_init_cactus_large_2_collision_collection();
+    rex_game_init_cactus_small_0_collision_collection();
+    rex_game_init_cactus_small_1_collision_collection();
+    rex_game_init_cactus_small_2_collision_collection();
+    rex_game_init_pterodactyl_collision_collection();
 }

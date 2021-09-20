@@ -62,6 +62,10 @@ void ui_init(struct nk_context *ctx)
             rex_sounds[i] = cs_make_def(&rex_sounds_buf[i]);
         }
     }
+
+    { /* init object collision collections */
+        rex_game_init_rex_collision_collections();
+    }
 }
 
 void ui_run(struct nk_context *ctx, float width, float height)
