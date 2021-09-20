@@ -12,6 +12,9 @@ static struct rex_game_object rex_objects[REX_GAME_MAX_OBJECT_AMOUNT];
 void rex_game_generate_random_objects(void)
 { /* create a complete object */
     int duration;
+
+    int min_frame_gap = (int)(glfw.width / (rex_game_speed * REX_GAME_OBJECT_MOVE_SPEED * REX_GAME_MAX_OBSTACLE_AMOUNT)) + 1;
+
     /* create decoration object */
     /* check gap */
     if (rex_frame > rex_last_create_decoration_frame)
@@ -22,8 +25,10 @@ void rex_game_generate_random_objects(void)
         duration = MAX_FRAME_AMOUNT - rex_last_create_decoration_frame + rex_frame;
 
     /* shouldn't create new object if duration isn't equal min gap */
-    if (duration == (int)(REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP / ((rex_game_speed - REX_GAME_SPEED) * REX_GAME_OBJECT_MOVE_SPEED)) && rex_decoration_amount < REX_GAME_MAX_DECORATION_AMOUNT)
+    if (rex_decoration_amount < REX_GAME_MAX_DECORATION_AMOUNT && duration > min_frame_gap)
         rex_game_generate_random_decoration();
+
+    min_frame_gap = (int)(glfw.width / (rex_game_speed * REX_GAME_CLOUD_SPEED * REX_GAME_MAX_DECORATION_AMOUNT)) + 1;
 
     /* create obstacle object */
     if (rex_frame > rex_last_create_obstacle_frame)
@@ -31,7 +36,7 @@ void rex_game_generate_random_objects(void)
     else
         duration = MAX_FRAME_AMOUNT - rex_last_create_obstacle_frame + rex_frame;
 
-    if (duration == (int)(REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP / ((rex_game_speed - REX_GAME_SPEED) * REX_GAME_OBJECT_MOVE_SPEED)) && rex_obstacle_amount < REX_GAME_MAX_OBSTACLE_AMOUNT)
+    if (rex_obstacle_amount < REX_GAME_MAX_OBSTACLE_AMOUNT && duration > min_frame_gap)
         rex_game_generate_random_obstacle();
 }
 

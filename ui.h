@@ -29,8 +29,7 @@
 #define REX_GAME_PTERODACTYL_MAX_HEIGHT 140
 #define REX_GAME_PTERODACTYL_MIN_HEIGHT 50
 
-#define REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP 150 /* should create another object after min gap */
-#define REX_GAME_CREATE_OBJECT_MAX_FRAME_GAP 160
+#define REX_GAME_CREATE_OBJECT_GAP_BETWEEN_MIN_AND_MAX 10
 
 /* speed */
 #define REX_GAME_PTERODACTYL_SPEED 8
@@ -89,10 +88,6 @@
 #define REX_GAME_OBJECT_CACTUS_Y_POSITION 480
 
 /*============================== objects image ==============================*/
-/* cactus large */
-#define CACTUS_LARGE_X 652
-#define CACTUS_LARGE_Y 2
-
 /* cloud */
 #define IMAGE_CLOUD_ID 0
 #define IMAGE_CLOUD_PATH "assets/cloud.png"

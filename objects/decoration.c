@@ -3,8 +3,9 @@
 
 void rex_game_generate_random_decoration(void)
 {
-    if (rex_object_amount > REX_GAME_MAX_OBJECT_AMOUNT)
-        /* queue full */
+    int min_frame_gap = (int)(glfw.width / (rex_game_speed * REX_GAME_CLOUD_SPEED * REX_GAME_MAX_DECORATION_AMOUNT)) + 1;
+
+    if (rex_frame - rex_last_create_decoration_frame < min_frame_gap)
         return;
 
     unsigned char i;
@@ -35,7 +36,7 @@ void rex_game_generate_random_decoration(void)
     case REX_GAME_DECORATION_CLOUD:
     default:
     { /* draw cloud */
-        srand(rex_random_seed + rex_frame);
+        // srand(rex_random_seed + rex_frame);
 
         struct rex_image image = rex_image_load(IMAGE_CLOUD_ID);
         decoration->width = image.width;
@@ -48,14 +49,17 @@ void rex_game_generate_random_decoration(void)
     }
 
     int delta_frame = (decoration->width + glfw.width) / (rex_game_speed * REX_GAME_CLOUD_SPEED);
+    printf("[decoration] min_frame_gap->%d\n", min_frame_gap);
 
-    srand(rex_random_seed + rex_frame);
-    int rand_factor = rand() % (REX_GAME_CREATE_OBJECT_MAX_FRAME_GAP - REX_GAME_CREATE_OBJECT_MIN_FRAME_GAP);
-    decoration->create_at_frame = rex_frame + rand_factor;
+    // srand(rex_random_seed + rex_frame);
+    int rand_factor = rand() % REX_GAME_CREATE_OBJECT_GAP_BETWEEN_MIN_AND_MAX;
+
+    decoration->create_at_frame = rex_frame + rand_factor + min_frame_gap;
+
     decoration->destroy_at_frame = decoration->create_at_frame + delta_frame;
 
     /* update last_create_object_frame */
-    rex_last_create_decoration_frame = rex_frame;
+    rex_last_create_decoration_frame = decoration->create_at_frame;
 }
 
 void rex_game_draw_decoration(struct nk_context *ctx, struct rex_game_object *decoration)

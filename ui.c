@@ -110,6 +110,10 @@ REX_GOTO_BEGIN_SCENE:
 /* draw main scene */
 REX_GOTO_MAIN_SCENE:
 { /* reset */
+    /* regenerate random seed */
+    srand((unsigned int)time(NULL));
+    rex_random_seed = rand();
+
     /* clear all objects except trex in queue */
     for (unsigned int i = 0; i < REX_GAME_MAX_OBJECT_AMOUNT - 1; i++)
         rex_objects[i].active = INACTIVE;

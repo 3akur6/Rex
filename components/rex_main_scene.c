@@ -106,13 +106,13 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
         }
 
         /* handle collision detect here */
-        if (rex_game_collision_detect() == nk_true)
-        {
-            /* play sound */
-            cs_play_sound(rex_sound_ctx, rex_sounds[SOUND_HIT_ID]);
-            event = REX_MAIN_SCENE_GAME_OVER;
-            rex_end_frames();
-        }
+        // if (rex_game_collision_detect() == nk_true)
+        // {
+        //     /* play sound */
+        //     cs_play_sound(rex_sound_ctx, rex_sounds[SOUND_HIT_ID]);
+        //     event = REX_MAIN_SCENE_GAME_OVER;
+        //     rex_end_frames();
+        // }
     }
 
     nk_end(ctx);
