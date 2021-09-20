@@ -9,7 +9,7 @@ static struct rex_game_object rex_objects[REX_GAME_MAX_OBJECT_AMOUNT];
 #include "../objects/obstacle.c"
 #include "../objects/decoration.c"
 
-void rex_game_generate_random_object(void)
+void rex_game_generate_random_objects(void)
 { /* create a complete object */
     int duration;
     /* create decoration object */

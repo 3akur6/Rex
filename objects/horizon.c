@@ -73,8 +73,6 @@ void rex_object_draw_horizon(struct nk_context *ctx)
 {
     struct rex_game_object_horizon *horizon = rex_object_get_horizon();
 
-    rex_debug_print_rex_horizon();
-
     switch (horizon->active)
     {
     case ACTIVE:

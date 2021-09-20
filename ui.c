@@ -114,9 +114,11 @@ REX_GOTO_MAIN_SCENE:
     for (unsigned int i = 0; i < REX_GAME_MAX_OBJECT_AMOUNT - 1; i++)
         rex_objects[i].active = INACTIVE;
 
-    /* set trex to active */
+    /* reset trex */
     struct rex_game_object *trex = rex_object_get_trex();
     trex->active = ACTIVE;
+    trex->create_at_frame = 0;
+    trex->destroy_at_frame = 0;
 
     /* only init once */
     rex_object_init_horizon();
