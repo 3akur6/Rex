@@ -25,6 +25,6 @@ struct rex_collision_collection
 #define REX_CACTUS_SMALL_2_COLLISION_COLLECTION_INDEX 7
 #define REX_PTERODACTYL_COLLISION_COLLECTION_INDEX 8
 
-#define REX_COLLISION_COLLECTION_MAX_SIZE (REX_GAME_OBSTACLE_TYPE_AMOUNT + 1) /* 1 is for trex */
+#define REX_COLLISION_COLLECTION_MAX_SIZE 9 /* 1 is for trex */
 
 static struct rex_collision_collection rex_collision_collections[REX_COLLISION_COLLECTION_MAX_SIZE];
