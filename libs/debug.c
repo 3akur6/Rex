@@ -1,6 +1,6 @@
-void rex_debug_print_rex_object(struct rex_game_object *object)
+void rex_debug_print_rex_object(struct rex_game_object *object, char *msg)
 {
-    printf("[rex_debug_print_rex_object] ");
+    printf("[rex_debug_print_rex_object (%s)] ", msg);
     if (object->type == 0)
     {
         printf("UNINITIALIZED OBJECT\n");
@@ -236,15 +236,15 @@ void rex_debug_print_keyboard_event(void)
 
 void collision_debug_print_collision_box(struct collision_box *box, char *msg)
 {
-    printf("[collision_debug_print_collision_box (%s) (%d)] ", msg, rex_current_score);
+    printf("[collision_debug_print_collision_box (%s) (%d) (%d)] ", msg, rex_frame, rex_current_score);
     printf("(x,y)->(%f,%f), width->%u, height->%u\n", box->x, box->y, box->width, box->height);
 }
 
-void rex_debug_print_rex_collision_collection(struct rex_collision_collection *collection)
+void rex_debug_print_rex_collision_collection(struct rex_collision_collection *collection, char *msg)
 {
     unsigned int collection_amount = collection->amount;
 
-    printf("[rex_debug_print_rex_collision_collection (%d) (%d) (%d)]\n", collection_amount, rex_frame, rex_current_score);
+    printf("[rex_debug_print_rex_collision_collection (%s) (%d) (%d) (%d)]\n", msg, collection_amount, rex_frame, rex_current_score);
 
     for (unsigned int i = 0; i < collection->amount; i++)
     {

@@ -1,14 +1,14 @@
 nk_bool collision_detect(struct collision_box *box1, struct collision_box *box2)
 {
-    unsigned int box1_x = box1->x;
-    unsigned int box1_x_right = box1->x + box1->width;
-    unsigned int box1_y = box1->y;
-    unsigned int box1_y_bottom = box1->y + box1->height;
+    float box1_x = box1->x;
+    float box1_x_right = box1->x + box1->width;
+    float box1_y = box1->y;
+    float box1_y_bottom = box1->y + box1->height;
 
-    unsigned int box2_x = box2->x;
-    unsigned int box2_x_right = box2->x + box2->width;
-    unsigned int box2_y = box2->y;
-    unsigned int box2_y_bottom = box2->y + box2->height;
+    float box2_x = box2->x;
+    float box2_x_right = box2->x + box2->width;
+    float box2_y = box2->y;
+    float box2_y_bottom = box2->y + box2->height;
 
     if (box1_x_right < box2_x || box1_x > box2_x_right || box1_y_bottom < box2_y || box1_y > box2_y_bottom)
         /* no collision */
@@ -34,37 +34,23 @@ struct rex_collision_collection *rex_game_obstacle_get_collision_collection(stru
     switch (obstacle->detail.obstacle)
     {
     case REX_GAME_OBSTACLE_PTERODACTYL:
-    {
         return &rex_collision_collections[REX_PTERODACTYL_COLLISION_COLLECTION_INDEX];
-    }
     case REX_GAME_OBSTACLE_CACTUS_SMALL_0:
-    {
         return &rex_collision_collections[REX_CACTUS_SMALL_0_COLLISION_COLLECTION_INDEX];
-    }
     case REX_GAME_OBSTACLE_CACTUS_SMALL_1:
-    {
         return &rex_collision_collections[REX_CACTUS_SMALL_1_COLLISION_COLLECTION_INDEX];
-    }
     case REX_GAME_OBSTACLE_CACTUS_SMALL_2:
-    {
         return &rex_collision_collections[REX_CACTUS_SMALL_2_COLLISION_COLLECTION_INDEX];
-    }
     case REX_GAME_OBSTACLE_CACTUS_LARGE_0:
-    {
         return &rex_collision_collections[REX_CACTUS_LARGE_0_COLLISION_COLLECTION_INDEX];
-    }
     case REX_GAME_OBSTACLE_CACTUS_LARGE_1:
-    {
         return &rex_collision_collections[REX_CACTUS_LARGE_1_COLLISION_COLLECTION_INDEX];
-    }
     case REX_GAME_OBSTACLE_CACTUS_LARGE_2:
-    {
         return &rex_collision_collections[REX_CACTUS_LARGE_2_COLLISION_COLLECTION_INDEX];
-    }
     }
 }
 
-struct rex_collision_collection *rex_game_object_get_collison_collection(struct rex_game_object *object)
+struct rex_collision_collection *rex_game_object_get_collision_collection(struct rex_game_object *object)
 {
     switch (object->type)
     { /* ignore decoration object */
@@ -75,25 +61,63 @@ struct rex_collision_collection *rex_game_object_get_collison_collection(struct 
     }
 }
 
+struct rex_collision_collection rex_game_object_get_real_collision_collection(struct rex_game_object *object)
+{
+    struct rex_collision_collection collection;
+    struct rex_collision_collection *raw = rex_game_object_get_collision_collection(object);
+
+    collection.amount = raw->amount;
+
+    for (unsigned char i = 0; i < raw->amount; i++)
+    {
+        collection.boxes[i].x = raw->boxes[i].x + object->x;
+        collection.boxes[i].y = raw->boxes[i].y + object->y;
+        collection.boxes[i].width = raw->boxes[i].width;
+        collection.boxes[i].height = raw->boxes[i].height;
+    }
+
+    return collection;
+}
+
 /* shouldn't call this function in other place */
 nk_bool _rex_game_collision_detect(struct rex_game_object *object1, struct rex_game_object *object2)
 {
-    struct rex_collision_collection *collection1 = rex_game_object_get_collison_collection(object1);
-    struct rex_collision_collection *collection2 = rex_game_object_get_collison_collection(object2);
+    { /* coarse-grained detection */
+        struct collision_box box1;
+        struct collision_box box2;
+        /* */
+        box1.x = object1->x;
+        box1.y = object1->y;
+        box1.width = object1->width;
+        box1.height = object1->height;
 
-    rex_debug_print_rex_collision_collection(collection1);
-    rex_debug_print_rex_collision_collection(collection2);
+        box2.x = object2->x;
+        box2.y = object2->y;
+        box2.width = object2->width;
+        box2.height = object2->height;
 
-    for (unsigned char i = 0; i < collection1->amount; i++)
-    { /* iterate collection1 boxes */
-        for (unsigned char j = 0; j < collection2->amount; j++)
-        { /* iterate collection2 boxes */
-            if (collision_detect(&collection1->boxes[i], &collection2->boxes[j]) == nk_true)
-                return nk_true;
-        }
+        if (collision_detect(&box1, &box2) == nk_false)
+            return nk_false;
     }
 
-    return nk_false;
+    { /* fine-grained detection */
+        struct rex_collision_collection collection1 = rex_game_object_get_real_collision_collection(object1);
+        struct rex_collision_collection collection2 = rex_game_object_get_real_collision_collection(object2);
+
+        // rex_debug_print_rex_collision_collection(&collection1, "collection1");
+        // rex_debug_print_rex_collision_collection(&collection2, "collection2");
+
+        for (unsigned char i = 0; i < collection1.amount; i++)
+        { /* iterate collection1 boxes */
+            for (unsigned char j = 0; j < collection2.amount; j++)
+            { /* iterate collection2 boxes */
+                if (collision_detect(&collection1.boxes[i], &collection2.boxes[j]) == nk_true)
+                    return nk_true;
+            }
+        }
+
+        return nk_false;
+    }
 }
 
 nk_bool rex_game_collision_detect(void)
@@ -102,7 +126,11 @@ nk_bool rex_game_collision_detect(void)
     struct rex_game_object *object2 = rex_object_get_trex();
 
     if (object1 != NULL && object2 != NULL)
+    {
+        // rex_debug_print_rex_object(object1, "object1");
+        // rex_debug_print_rex_object(object2, "object2");
         return _rex_game_collision_detect(object1, object2);
+    }
 
     return nk_false;
 }
