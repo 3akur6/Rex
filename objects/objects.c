@@ -1,8 +1,8 @@
 static unsigned char rex_object_amount = 0;
 static unsigned char rex_decoration_amount = 0;
 static unsigned char rex_obstacle_amount = 0;
-static unsigned char rex_last_create_decoration_frame = 0; /* create decoration at frame last time */
-static unsigned char rex_last_create_obstacle_frame = 0;   /* create obstacle at frame last time */
+static unsigned int rex_last_create_decoration_frame = 0; /* create decoration at frame last time */
+static unsigned int rex_last_create_obstacle_frame = 0;   /* create obstacle at frame last time */
 static struct rex_game_object rex_objects[REX_GAME_MAX_OBJECT_AMOUNT];
 
 #include "../objects/trex.c"
@@ -13,25 +13,29 @@ void rex_game_generate_random_objects(void)
 { /* create a complete object */
     int duration;
 
-    int min_frame_gap = (int)(glfw.width / (rex_game_speed * REX_GAME_OBJECT_MOVE_SPEED * REX_GAME_MAX_OBSTACLE_AMOUNT)) + 1;
+    int min_frame_gap = (int)(glfw.width / (rex_game_speed * REX_GAME_CLOUD_SPEED * REX_GAME_MAX_DECORATION_AMOUNT)) + 1;
 
     /* create decoration object */
     /* check gap */
-    if (rex_frame > rex_last_create_decoration_frame)
+    if (rex_frame >= rex_last_create_decoration_frame)
         /* |------|last|-------------|rex_frame|----| */
         duration = rex_frame - rex_last_create_decoration_frame;
     else
         /* |-----|rex_frame|--------|last|---------| */
         duration = MAX_FRAME_AMOUNT - rex_last_create_decoration_frame + rex_frame;
 
+    printf("[rex_game_generate_random_objects] duration->%d, min_frame_gap1->%d, decoration->%d, ", duration, min_frame_gap, rex_last_create_decoration_frame);
+
     /* shouldn't create new object if duration isn't equal min gap */
     if (rex_decoration_amount < REX_GAME_MAX_DECORATION_AMOUNT && duration > min_frame_gap)
         rex_game_generate_random_decoration();
 
-    min_frame_gap = (int)(glfw.width / (rex_game_speed * REX_GAME_CLOUD_SPEED * REX_GAME_MAX_DECORATION_AMOUNT)) + 1;
+    min_frame_gap = (int)(glfw.width / (rex_game_speed * REX_GAME_OBJECT_MOVE_SPEED * REX_GAME_MAX_OBSTACLE_AMOUNT)) + 1;
+
+    printf("min_frame_gap2->%d, obstacle->%d\n", min_frame_gap, rex_last_create_obstacle_frame);
 
     /* create obstacle object */
-    if (rex_frame > rex_last_create_obstacle_frame)
+    if (rex_frame >= rex_last_create_obstacle_frame)
         duration = rex_frame - rex_last_create_obstacle_frame;
     else
         duration = MAX_FRAME_AMOUNT - rex_last_create_obstacle_frame + rex_frame;

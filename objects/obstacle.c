@@ -3,11 +3,6 @@
 
 void rex_game_generate_random_obstacle(void)
 {
-    int min_frame_gap = (int)(glfw.width / (rex_game_speed * REX_GAME_OBJECT_MOVE_SPEED * REX_GAME_MAX_OBSTACLE_AMOUNT)) + 1;
-
-    if (rex_frame - rex_last_create_obstacle_frame < min_frame_gap)
-        return;
-
     /* replace one of the inactive obstacles with new obstacle */
     unsigned char i;
     /* the last one is preserved for trex */
@@ -110,19 +105,19 @@ void rex_game_generate_random_obstacle(void)
     }
 
     int delta_frame = (obstacle.width + glfw.width) / (rex_game_speed * REX_GAME_OBJECT_MOVE_SPEED);
-    printf("[obstacle] min_frame_gap->%d\n", min_frame_gap);
+    // printf("[obstacle] min_frame_gap->%d\n", min_frame_gap);
 
     // srand(rex_random_seed + rex_frame);
     int rand_factor = rand() % REX_GAME_CREATE_OBJECT_GAP_BETWEEN_MIN_AND_MAX;
 
-    obstacle.create_at_frame = rex_frame + rand_factor + min_frame_gap;
-    obstacle.destroy_at_frame = obstacle.create_at_frame + delta_frame;
+    obstacle.create_at_frame = (rex_frame + rand_factor) % MAX_FRAME_AMOUNT;
+    obstacle.destroy_at_frame = (obstacle.create_at_frame + delta_frame) % MAX_FRAME_AMOUNT;
 
     /* save object */
     rex_objects[i] = obstacle;
 
     /* update last_create_object_frame */
-    rex_last_create_obstacle_frame = obstacle.create_at_frame;
+    rex_last_create_obstacle_frame = rex_frame;
 }
 
 void rex_game_draw_obstacle(struct nk_context *ctx, struct rex_game_object *obstacle)

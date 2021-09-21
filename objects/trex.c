@@ -161,5 +161,14 @@ void rex_game_draw_trex(struct nk_context *ctx, struct rex_game_object *trex)
 
 void rex_game_draw_freeze_trex(struct nk_context *ctx, struct rex_game_object *trex)
 {
-    rex_draw_image(ctx, IMAGE_TREX_7_ID, trex->x, trex->y);
+    switch (trex->detail.trex)
+    {
+    case REX_GAME_TREX_JUMP:
+    case REX_GAME_TREX_WALK:
+        rex_draw_image(ctx, IMAGE_TREX_7_ID, trex->x, trex->y);
+        break;
+    case REX_GAME_TREX_DUCK:
+        rex_draw_image(ctx, IMAGE_TREX_7_ID, trex->x + END_SCENE_TREX_DUCK_TO_DEAD_SHRINK, trex->y);
+        break;
+    }
 }

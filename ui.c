@@ -125,6 +125,7 @@ REX_GOTO_MAIN_SCENE:
     /* reset trex */
     struct rex_game_object *trex = rex_object_get_trex();
     trex->active = ACTIVE;
+    trex->detail.trex = REX_GAME_TREX_WALK;
     trex->create_at_frame = 0;
     trex->destroy_at_frame = 0;
 
@@ -151,6 +152,8 @@ REX_GOTO_END_SCENE:
     rex_game_freeze_objects();
     /* freeze horizon */
     rex_object_freeze_horizon();
+
+    struct rex_game_object *trex = rex_object_get_trex();
 
     current_scene = REX_END_SCENE;
     return;

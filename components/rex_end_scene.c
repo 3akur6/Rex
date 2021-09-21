@@ -24,7 +24,6 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
     /* detect space event */
     if (rex_scene_lock == nk_false)
     {
-        rex_game_set_trex_status(REX_GAME_TREX_STATIC);
         /* detect event */
         /* detect space event */
         switch (rex_input_key.code)
@@ -79,7 +78,7 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
     {
         /* do something here before scene changes */
 
-        if (rex_input_key.status == REX_KEY_STATUS_RELEASE)
+        if (rex_input_key.status == REX_KEY_STATUS_PRESS)
         { /* ensure that key is released */
             rex_scene_lock = nk_false;
             event = REX_END_SCENE_SPACE_PRESSED;
