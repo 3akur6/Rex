@@ -64,14 +64,14 @@ void rex_object_trex_walk(struct nk_context *ctx, struct rex_game_object *trex)
 void rex_object_trex_duck(struct nk_context *ctx, struct rex_game_object *trex)
 {
     trex->x = REX_GAME_TREX_X_POSITION;
-    trex->y = REX_GAME_TREX_Y_POSITION;
+    trex->y = REX_GAME_TREX_Y_POSITION + REX_GAME_TREX_DUCK_Y_POSITION_OFFSET;
     trex->width = IMAGE_TREX_8_WIDTH;
     trex->height = IMAGE_TREX_8_HEIGHT;
 
     if (rex_frame & REX_GAME_TREX_DUCK_SPEED)
-        rex_draw_image(ctx, IMAGE_TREX_8_ID, trex->x, trex->y + REX_GAME_TREX_DUCK_Y_POSITION_OFFSET);
+        rex_draw_image(ctx, IMAGE_TREX_8_ID, trex->x, trex->y);
     else
-        rex_draw_image(ctx, IMAGE_TREX_9_ID, trex->x, trex->y + REX_GAME_TREX_DUCK_Y_POSITION_OFFSET);
+        rex_draw_image(ctx, IMAGE_TREX_9_ID, trex->x, trex->y);
 }
 
 void rex_object_trex_jump(struct nk_context *ctx, struct rex_game_object *trex)
@@ -168,7 +168,7 @@ void rex_game_draw_freeze_trex(struct nk_context *ctx, struct rex_game_object *t
         rex_draw_image(ctx, IMAGE_TREX_7_ID, trex->x, trex->y);
         break;
     case REX_GAME_TREX_DUCK:
-        rex_draw_image(ctx, IMAGE_TREX_7_ID, trex->x + END_SCENE_TREX_DUCK_TO_DEAD_SHRINK, trex->y);
+        rex_draw_image(ctx, IMAGE_TREX_7_ID, trex->x + END_SCENE_TREX_DUCK_TO_DEAD_SHRINK, trex->y - REX_GAME_TREX_DUCK_Y_POSITION_OFFSET);
         break;
     }
 }

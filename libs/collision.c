@@ -10,7 +10,7 @@ nk_bool collision_detect(struct collision_box *box1, struct collision_box *box2)
     float box2_y = box2->y;
     float box2_y_bottom = box2->y + box2->height;
 
-    if (box1_x_right < box2_x || box1_x > box2_x_right || box1_y_bottom < box2_y || box1_y > box2_y_bottom)
+    if (box1_x_right <= box2_x || box1_x >= box2_x_right || box1_y_bottom <= box2_y || box1_y >= box2_y_bottom)
         /* no collision */
         return nk_false;
 
@@ -104,8 +104,8 @@ nk_bool _rex_game_collision_detect(struct rex_game_object *object1, struct rex_g
         struct rex_collision_collection collection1 = rex_game_object_get_real_collision_collection(object1);
         struct rex_collision_collection collection2 = rex_game_object_get_real_collision_collection(object2);
 
-        // rex_debug_print_rex_collision_collection(&collection1, "collection1");
-        // rex_debug_print_rex_collision_collection(&collection2, "collection2");
+        rex_debug_print_rex_collision_collection(&collection1, "collection1");
+        rex_debug_print_rex_collision_collection(&collection2, "collection2");
 
         for (unsigned char i = 0; i < collection1.amount; i++)
         { /* iterate collection1 boxes */

@@ -24,7 +24,7 @@ void rex_game_generate_random_objects(void)
         /* |-----|rex_frame|--------|last|---------| */
         duration = MAX_FRAME_AMOUNT - rex_last_create_decoration_frame + rex_frame;
 
-    printf("[rex_game_generate_random_objects] duration->%d, min_frame_gap1->%d, decoration->%d, ", duration, min_frame_gap, rex_last_create_decoration_frame);
+    // printf("[rex_game_generate_random_objects] duration->%d, min_frame_gap1->%d, decoration->%d, ", duration, min_frame_gap, rex_last_create_decoration_frame);
 
     /* shouldn't create new object if duration isn't equal min gap */
     if (rex_decoration_amount < REX_GAME_MAX_DECORATION_AMOUNT && duration > min_frame_gap)
@@ -32,7 +32,7 @@ void rex_game_generate_random_objects(void)
 
     min_frame_gap = (int)(glfw.width / (rex_game_speed * REX_GAME_OBJECT_MOVE_SPEED * REX_GAME_MAX_OBSTACLE_AMOUNT)) + 1;
 
-    printf("min_frame_gap2->%d, obstacle->%d\n", min_frame_gap, rex_last_create_obstacle_frame);
+    // printf("min_frame_gap2->%d, obstacle->%d\n", min_frame_gap, rex_last_create_obstacle_frame);
 
     /* create obstacle object */
     if (rex_frame >= rex_last_create_obstacle_frame)
