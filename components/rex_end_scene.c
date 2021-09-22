@@ -1,7 +1,7 @@
 enum rex_end_scene_event
 {
     REX_END_SCENE_NOTHING_HAPPEN,
-    REX_END_SCENE_SPACE_PRESSED,
+    REX_END_SCENE_ENTER_PRESSED,
 };
 
 void rex_end_scene_hi(struct nk_context *ctx, float place_x, float place_y)
@@ -28,9 +28,10 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
         /* detect space event */
         switch (rex_input_key.code)
         {
+        case REX_KEY_CODE_SPACE:
         case REX_KEY_CODE_DOWN:
             break;
-        case REX_KEY_CODE_SPACE:
+        case REX_KEY_CODE_ENTER:
             switch (rex_input_key.status)
             {
             case REX_KEY_STATUS_REPEAT:
@@ -77,11 +78,10 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
     if (rex_scene_lock == nk_true)
     {
         /* do something here before scene changes */
-
         if (rex_input_key.status == REX_KEY_STATUS_PRESS)
-        { /* ensure that key is released */
+        {
             rex_scene_lock = nk_false;
-            event = REX_END_SCENE_SPACE_PRESSED;
+            event = REX_END_SCENE_ENTER_PRESSED;
         }
     }
 

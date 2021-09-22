@@ -1,4 +1,4 @@
-#include "style.h"
+#define MAX_FONTS_AMOUNT 10
 
 /* global fonts */
 struct rex_font

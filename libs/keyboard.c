@@ -2,6 +2,7 @@ enum rex_key_code
 {
     REX_KEY_CODE_DOWN = 1, /* down key */
     REX_KEY_CODE_SPACE,    /* space key */
+    REX_KEY_CODE_ENTER,    /* enter key */
 };
 
 enum rex_key_status
@@ -25,21 +26,18 @@ void rex_keyboard_key_callback(GLFWwindow *window, int key, int scancode, int ac
     {
     case GLFW_KEY_SPACE:
         rex_input_key.code = REX_KEY_CODE_SPACE;
-        switch (action)
-        {
-        case GLFW_RELEASE:
-            rex_input_key.status = REX_KEY_STATUS_RELEASE;
-            break;
-        case GLFW_PRESS:
-            rex_input_key.status = REX_KEY_STATUS_PRESS;
-            break;
-        case GLFW_REPEAT:
-            rex_input_key.status = REX_KEY_STATUS_REPEAT;
-            break;
-        }
         break;
     case GLFW_KEY_DOWN:
         rex_input_key.code = REX_KEY_CODE_DOWN;
+        break;
+    case GLFW_KEY_ENTER:
+        rex_input_key.code = REX_KEY_CODE_ENTER;
+        break;
+    }
+
+    if (rex_input_key.code != 0)
+    {
+        /* only handle specific key code */
         switch (action)
         {
         case GLFW_RELEASE:
@@ -52,7 +50,6 @@ void rex_keyboard_key_callback(GLFWwindow *window, int key, int scancode, int ac
             rex_input_key.status = REX_KEY_STATUS_REPEAT;
             break;
         }
-        break;
     }
 }
 

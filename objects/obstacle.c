@@ -161,6 +161,7 @@ struct rex_game_object *rex_game_get_closest_obstacle(void)
     for (unsigned char i = 0; i < REX_GAME_MAX_OBJECT_AMOUNT - 1; i++)
     {
         object = &rex_objects[i];
+
         float object_x = object->x;
         float object_x_right = object_x + object->width;
         if (object->active == ACTIVE && object->type == REX_GAME_OBJECT_OBSTACLE && trex_x < object_x_right)

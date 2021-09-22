@@ -21,6 +21,7 @@ struct rex_collision_collection *rex_game_trex_get_collision_collection(struct r
 {
     switch (trex->detail.trex)
     {
+    case REX_GAME_TREX_STATIC:
     case REX_GAME_TREX_JUMP:
     case REX_GAME_TREX_WALK:
         return &rex_collision_collections[REX_TREX_WALK_COLLISION_COLLECTION_INDEX];
@@ -82,7 +83,8 @@ struct rex_collision_collection rex_game_object_get_real_collision_collection(st
 /* shouldn't call this function in other place */
 nk_bool _rex_game_collision_detect(struct rex_game_object *object1, struct rex_game_object *object2)
 {
-    { /* coarse-grained detection */
+    {
+        /* coarse-grained detection */
         struct collision_box box1;
         struct collision_box box2;
         /* */
@@ -100,12 +102,17 @@ nk_bool _rex_game_collision_detect(struct rex_game_object *object1, struct rex_g
             return nk_false;
     }
 
-    { /* fine-grained detection */
+    rex_debug_print_rex_object(object1, "object1");
+    rex_debug_print_rex_object(object2, "object2");
+    fflush(stdout);
+
+    {
+        /* fine-grained detection */
         struct rex_collision_collection collection1 = rex_game_object_get_real_collision_collection(object1);
         struct rex_collision_collection collection2 = rex_game_object_get_real_collision_collection(object2);
 
-        rex_debug_print_rex_collision_collection(&collection1, "collection1");
-        rex_debug_print_rex_collision_collection(&collection2, "collection2");
+        if (collection1.amount == 0 && collection2.amount == 0)
+            return nk_false;
 
         for (unsigned char i = 0; i < collection1.amount; i++)
         { /* iterate collection1 boxes */
@@ -126,11 +133,7 @@ nk_bool rex_game_collision_detect(void)
     struct rex_game_object *object2 = rex_object_get_trex();
 
     if (object1 != NULL && object2 != NULL)
-    {
-        // rex_debug_print_rex_object(object1, "object1");
-        // rex_debug_print_rex_object(object2, "object2");
         return _rex_game_collision_detect(object1, object2);
-    }
 
     return nk_false;
 }

@@ -97,7 +97,7 @@ void ui_run(struct nk_context *ctx, float width, float height)
         event = rex_end_scene(ctx, width, height);
         switch (event)
         {
-        case REX_END_SCENE_SPACE_PRESSED:
+        case REX_END_SCENE_ENTER_PRESSED:
             goto REX_GOTO_MAIN_SCENE;
         default:
             goto REX_GOTO_NOTHING_HAPPEN;

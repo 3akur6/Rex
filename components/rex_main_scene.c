@@ -101,8 +101,12 @@ enum rex_main_scene_event rex_main_scene(struct nk_context *ctx, float window_wi
         {
             /* play sound */
             cs_play_sound(rex_sound_ctx, rex_sounds[SOUND_REACHED_ID]);
-            /* level up, speed up */
-            rex_game_speed += REX_GAME_SPEED_ADDEND;
+            if (rex_game_speed < REX_GAME_MAX_GAME_SPEED)
+                /* level up, speed up */
+                rex_game_speed += REX_GAME_SPEED_ADDEND;
+
+            // printf("%f\n", rex_game_speed);
+            fflush(stdout);
         }
 
         /* handle collision detect here */

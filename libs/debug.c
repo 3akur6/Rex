@@ -1,6 +1,6 @@
 void rex_debug_print_rex_object(struct rex_game_object *object, char *msg)
 {
-    printf("[rex_debug_print_rex_object (%s)] ", msg);
+    printf("[rex_debug_print_rex_object (%s) (%d) (%d)] ", msg, rex_frame, rex_current_score);
     if (object->type == 0)
     {
         printf("UNINITIALIZED OBJECT\n");

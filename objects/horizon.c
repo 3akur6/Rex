@@ -66,7 +66,11 @@ void rex_object_horizon_roll(struct nk_context *ctx, struct rex_game_object_hori
     rex_object_draw_freeze_horizon(ctx, horizon);
 
     /* update cut_begin */
-    horizon->cut_begin = ((int)(horizon->cut_begin + rex_game_speed * REX_GAME_HORIZON_LINE_ROLL_SPEED)) % IMAGE_HORIZON_WIDTH;
+    float before = horizon->cut_begin + rex_game_speed * REX_GAME_HORIZON_LINE_ROLL_SPEED;
+    if (before >= IMAGE_HORIZON_WIDTH)
+        horizon->cut_begin = before - IMAGE_HORIZON_WIDTH;
+    else
+        horizon->cut_begin = before;
 }
 
 void rex_object_draw_horizon(struct nk_context *ctx)
