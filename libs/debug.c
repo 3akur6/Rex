@@ -273,6 +273,9 @@ void rex_debug_print_rex_horizon(void)
     case FREEZE:
         strcpy(active_str, "FREEZE");
         break;
+    case EXTEND:
+        strcpy(active_str, "EXTEND");
+        break;
     }
 
     printf("(%s): (x,y)->(%f,%f), width->%u, height->%u, cut_begin->%f\n", active_str, horizon->x, horizon->y, horizon->width, horizon->height, horizon->cut_begin);

@@ -37,6 +37,7 @@ enum rex_game_object_status_type
     INACTIVE,
     ACTIVE,
     FREEZE,
+    EXTEND,
 };
 
 struct rex_game_object

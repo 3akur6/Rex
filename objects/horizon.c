@@ -18,6 +18,14 @@ struct rex_game_object_horizon *rex_object_get_horizon(void)
     return &rex_horizon;
 }
 
+void rex_object_set_horizon(enum rex_game_object_status_type status)
+{
+    struct rex_game_object_horizon *horizon = rex_object_get_horizon();
+
+    /* set horizon status */
+    horizon->active = status;
+}
+
 #include "../libs/debug.c"
 
 void rex_object_init_horizon(void)
@@ -41,6 +49,13 @@ void rex_object_draw_freeze_horizon(struct nk_context *ctx, struct rex_game_obje
     float cut_begin = horizon->cut_begin;
     float horizon_x = horizon->x;
     float horizon_y = horizon->y;
+
+    if (horizon->width < glfw.width)
+    {
+        /* may be extend mode */
+        rex_draw_subimage(ctx, IMAGE_HORIZON_ID, 0, 0, horizon->width, horizon->height, horizon->x, horizon->y);
+        return;
+    }
 
     /* update window width */
     horizon->width = glfw.width;
@@ -73,6 +88,18 @@ void rex_object_horizon_roll(struct nk_context *ctx, struct rex_game_object_hori
         horizon->cut_begin = before;
 }
 
+void rex_object_draw_extend_horizon(struct nk_context *ctx, struct rex_game_object_horizon *horizon)
+{
+    rex_draw_subimage(ctx, IMAGE_HORIZON_ID, 0, 0, horizon->width, IMAGE_HORIZON_HEIGHT, horizon->x, horizon->y);
+
+    if (horizon->width < glfw.width)
+        /* increase draw width until window_width */
+        horizon->width += REX_GAME_HORIZON_LINE_EXTEND_SPEED;
+    else if (horizon->width > glfw.width)
+        /* force horizon width to be window_width */
+        horizon->width = glfw.width;
+}
+
 void rex_object_draw_horizon(struct nk_context *ctx)
 {
     struct rex_game_object_horizon *horizon = rex_object_get_horizon();
@@ -84,6 +111,9 @@ void rex_object_draw_horizon(struct nk_context *ctx)
         break;
     case FREEZE:
         rex_object_draw_freeze_horizon(ctx, horizon);
+        break;
+    case EXTEND:
+        rex_object_draw_extend_horizon(ctx, horizon);
         break;
     }
 }

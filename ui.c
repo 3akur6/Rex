@@ -7,7 +7,7 @@ define ui scenes
 */
 enum ui_scene
 {
-    REX_BEGIN_SCENE,
+    REX_BEGIN_SCENE = 1,
     REX_MAIN_SCENE,
     REX_END_SCENE
 };
@@ -108,6 +108,16 @@ void ui_run(struct nk_context *ctx, float width, float height)
 
 /* draw begin scene */
 REX_GOTO_BEGIN_SCENE:
+{ /**/
+    /* only init once */
+    rex_object_init_horizon();
+    /* set horizon to freeze */
+    struct rex_game_object_horizon *horizon = rex_object_get_horizon();
+    horizon->active = FREEZE;
+    horizon->width = BEGIN_SCENE_FIRST_JUMP_HOIZON_WIDTH;
+
+    rex_debug_print_rex_horizon();
+}
     current_scene = REX_BEGIN_SCENE;
     return;
 
