@@ -78,7 +78,7 @@ enum rex_end_scene_event rex_end_scene(struct nk_context *ctx, float window_widt
     if (rex_scene_lock == nk_true)
     {
         /* do something here before scene changes */
-        if (rex_input_key.status == REX_KEY_STATUS_PRESS)
+        if (rex_input_key.code == REX_KEY_CODE_ENTER && rex_input_key.status == REX_KEY_STATUS_PRESS)
         {
             rex_scene_lock = nk_false;
             event = REX_END_SCENE_ENTER_PRESSED;

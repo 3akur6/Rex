@@ -102,8 +102,8 @@ nk_bool _rex_game_collision_detect(struct rex_game_object *object1, struct rex_g
             return nk_false;
     }
 
-    rex_debug_print_rex_object(object1, "object1");
-    rex_debug_print_rex_object(object2, "object2");
+    // rex_debug_print_rex_object(object1, "object1");
+    // rex_debug_print_rex_object(object2, "object2");
     fflush(stdout);
 
     {
