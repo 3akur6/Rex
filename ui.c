@@ -116,7 +116,7 @@ REX_GOTO_BEGIN_SCENE:
     horizon->active = FREEZE;
     horizon->width = BEGIN_SCENE_FIRST_JUMP_HOIZON_WIDTH;
 
-    rex_debug_print_rex_horizon();
+    // rex_debug_print_rex_horizon();
 }
     current_scene = REX_BEGIN_SCENE;
     return;

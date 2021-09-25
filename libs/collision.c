@@ -87,7 +87,7 @@ nk_bool _rex_game_collision_detect(struct rex_game_object *object1, struct rex_g
         /* coarse-grained detection */
         struct collision_box box1;
         struct collision_box box2;
-        /* */
+
         box1.x = object1->x;
         box1.y = object1->y;
         box1.width = object1->width;
@@ -101,11 +101,6 @@ nk_bool _rex_game_collision_detect(struct rex_game_object *object1, struct rex_g
         if (collision_detect(&box1, &box2) == nk_false)
             return nk_false;
     }
-
-    // rex_debug_print_rex_object(object1, "object1");
-    // rex_debug_print_rex_object(object2, "object2");
-    fflush(stdout);
-
     {
         /* fine-grained detection */
         struct rex_collision_collection collection1 = rex_game_object_get_real_collision_collection(object1);

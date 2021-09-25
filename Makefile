@@ -1,5 +1,5 @@
 # Install
-BIN = demo
+BIN = Rex
 
 # Flags
 CFLAGS += -std=c99 -pedantic -O2
