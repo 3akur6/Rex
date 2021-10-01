@@ -2,6 +2,8 @@
 
 Chrome Game Trex dino demo implemented in pure C using [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear) with OpenGL graphic engine as backend
 
+<img src="Screenshot.png" width = "757" height = "350" alt="Rex screenshot" align=center />
+
 ## Usage
 
 In linux:
@@ -10,6 +12,12 @@ In linux:
 $ make
 ```
 executable file will be generated in 'bin' directory.
+
+## TODO
+
+1. Night mode
+2. Cross-platform support
+3. More intelligent objects generating strategy
 
 ## Attention
 
